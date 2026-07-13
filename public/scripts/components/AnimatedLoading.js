@@ -1,3 +1,24 @@
+/**
+ * Renders one or more animated skeleton placeholder bars while content loads.
+ *
+ * On connect, the element appends child `div` elements styled with the global
+ * `.loading-wave` CSS animation. Configuration is read from `data-*` attributes
+ * when the element is inserted into the DOM.
+ *
+ * Use it like this:
+ * ```html
+ * <animated-loading data-elements="5" data-width="150px" data-height="220px">
+ * </animated-loading>
+ * ```
+ *
+ * @summary Animated skeleton loading placeholders
+ * @tag animated-loading
+ * @tagname animated-loading
+ *
+ * @attr {number} data-elements - Number of placeholder bars to render (default: 1)
+ * @attr {string} data-width - CSS width for each placeholder bar (default: 100px)
+ * @attr {string} data-height - CSS height for each placeholder bar (default: 10px)
+ */
 export class AnimatedLoading extends HTMLElement {
   constructor() {
     super();

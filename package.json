@@ -4,8 +4,10 @@
   "description": "This is a companion repository for the [Build a Fullstack App in Vanilla JS & Go](https://frontendmasters.com/courses/vanilla-js-go/) course on Frontend Masters. [![Frontend Masters](https://static.frontendmasters.com/assets/brand/logos/full.png)](https://frontendmasters.com/courses/vanilla-js-go/)",
   "main": "index.js",
   "scripts": {
+    "manifest:gen": "cem analyze",
+    "lint": "run-p lint:*",
     "lint:format": "prettier --check ./public",
-    "fix:format": "prettier --write ./public"  ,
+    "fix:format": "prettier --write ./public",
     "lint:styles": "stylelint \"./public/**/*.css\"",
     "fix:styles": "stylelint \"./public/**/*.css\" --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,8 +17,14 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.9.5",
     "stylelint": "^17.14.0",
     "stylelint-config-recommended": "^18.0.0"
-  }
+  },
+  "allowScripts": {
+    "rs-module-lexer@2.8.0": true
+  },
+  "customElements": "custom-elements.json"
 }

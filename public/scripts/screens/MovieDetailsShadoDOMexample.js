@@ -1,4 +1,5 @@
 import { API } from '../services/API.js';
+import '../components/AnimatedLoading.js';
 import '../components/YouTubeEmbed.js';
 
 export class MovieDetails extends HTMLElement {
@@ -35,18 +36,19 @@ export class MovieDetails extends HTMLElement {
   async #initialize() {
     try {
       const template = await MovieDetails.#loadTemplate();
-      const content = template.content.cloneNode(true);
-      this.appendChild(content);
+      const instance = template.content.cloneNode(true);
+      this.attachShadow({ mode: 'open' }).appendChild(instance);
 
+      const root = this.shadowRoot;
       this.#els = {
-        title: this.querySelector('h2'),
-        tagline: this.querySelector('h3'),
-        poster: this.querySelector('img'),
-        overview: this.querySelector('#overview'),
-        trailer: this.querySelector('#trailer'),
-        genres: this.querySelector('#genres'),
-        cast: this.querySelector('#cast'),
-        metadata: this.querySelector('#metadata'),
+        title: root.querySelector('h2'),
+        tagline: root.querySelector('h3'),
+        poster: root.querySelector('img'),
+        overview: root.querySelector('#overview'),
+        trailer: root.querySelector('#trailer'),
+        genres: root.querySelector('#genres'),
+        cast: root.querySelector('#cast'),
+        metadata: root.querySelector('#metadata'),
       };
 
       await this.#render();
@@ -64,26 +66,12 @@ export class MovieDetails extends HTMLElement {
       this.#els.tagline.textContent = this.#movie.tagline;
       this.#els.poster.src = this.#movie.poster_url;
       this.#els.trailer.dataset.url = this.#movie.trailer_url;
-      this.#els.metadata.innerHTML = `
-        <dt>Release Year</dt>
-        <dd>${this.#movie.release_year}</dd>
-        <dt>Score</dt>
-        <dd>${this.#movie.score} / 10</dd>
-        <dt>Popularity</dt>
-        <dd>${this.#movie.popularity}</dd>
-      `;
-      this.#els.genres.innerHTML = this.#movie.genres
-        .map(genre => `<li>${genre.name}</li>`)
-        .join('');
       this.#els.overview.textContent = this.#movie.overview;
-      this.#movie.casting.forEach(actor => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <img src="${actor.image_url ?? '/images/generic_actor.jpg'}" alt="Picture of ${actor.first_name} ${actor.last_name}">
-          <p>${actor.first_name} ${actor.last_name}</p>
-        `;
-        this.#els.cast.appendChild(li);
-      });
+      this.#els.genres.textContent = this.#movie.genres.map(genre => genre.name).join(', ');
+      this.#els.cast.innerHTML = this.#movie.casting
+        .map(actor => `<li>${actor.first_name} ${actor.last_name}</li>`)
+        .join('');
+      // this.#els.metadata.textContent = `${this.#movie.runtime} minutes, ${this.#movie.release_date}`;
     } catch (error) {
       console.error('Failed to fetch movie details:', error);
       // TODO: Implement Alerts

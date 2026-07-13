@@ -1,0 +1,16 @@
+# run with: ait -c .air.win.toml
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main.exe ./cmd/main.go"
+bin = "./tmp/main.exe"
+include_ext = ["go"]
+exclude_dir = [".idea", "tmp", "vendor", "node_modules"]
+delay = 1000
+
+[log]
+time = true
+
+[misc]
+clean_on_exit = true

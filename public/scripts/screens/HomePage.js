@@ -1,7 +1,24 @@
 import { API } from '../services/API.js';
 import { MovieItem } from '../components/MovieItem.js';
-import '../components/AnimatedLoading.js';
 
+/**
+ * Home screen showing this week's top movies and a random selection.
+ *
+ * On connect, the element loads its HTML template, fetches movie data from
+ * the API, and renders `movie-item` cards into two horizontal lists. The
+ * element is intended to be created programmatically with no HTML attributes.
+ *
+ * Use it like this:
+ * ```js
+ * import { HomePage } from './screens/HomePage.js';
+ *
+ * document.querySelector('main').appendChild(new HomePage());
+ * ```
+ *
+ * @summary Home screen with top and random movie lists
+ * @tag home-page
+ * @tagname home-page
+ */
 export class HomePage extends HTMLElement {
   static #templatePromise;
 
@@ -25,14 +42,30 @@ export class HomePage extends HTMLElement {
     super();
   }
 
-  async connectedCallback() {
+  connectedCallback() {
+    this.#initialize();
+  }
+
+  async #initialize() {
     try {
       const template = await HomePage.#loadTemplate();
       const content = template.content.cloneNode(true);
       this.appendChild(content);
-      await this.render();
+      await this.#render();
     } catch (error) {
       console.error('Error initializing HomePage:', error);
+    }
+  }
+
+  async #render() {
+    try {
+      const topMovies = await API.getTopMovies();
+      this.#renderMoviesToList(topMovies, this.querySelector('#top-10 ul'));
+
+      const randomMovies = await API.getRandomMovies();
+      this.#renderMoviesToList(randomMovies, this.querySelector('#random ul'));
+    } catch (error) {
+      console.error('Error rendering movies:', error);
     }
   }
 
@@ -43,18 +76,6 @@ export class HomePage extends HTMLElement {
       li.appendChild(new MovieItem(movie));
       ul.appendChild(li);
     });
-  }
-
-  async render() {
-    try {
-      const topMovies = await API.getTopMovies();
-      this.#renderMoviesToList(topMovies, this.querySelector('#top-10 ul'));
-
-      const randomMovies = await API.getRandomMovies();
-      this.#renderMoviesToList(randomMovies, this.querySelector('#random ul'));
-    } catch (error) {
-      console.error('Error rendering movies:', error);
-    }
   }
 }
 

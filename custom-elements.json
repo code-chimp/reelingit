@@ -1,0 +1,389 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/app.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/HomePage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Home screen showing this week's top movies and a random selection.\n\nOn connect, the element loads its HTML template, fetches movie data from\nthe API, and renders `movie-item` cards into two horizontal lists. The\nelement is intended to be created programmatically with no HTML attributes.\n\nUse it like this:\n```js\nimport { HomePage } from './screens/HomePage.js';\n\ndocument.querySelector('main').appendChild(new HomePage());\n```",
+          "name": "HomePage",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#templatePromise",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "method",
+              "name": "#loadTemplate",
+              "static": true,
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#renderMoviesToList",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "movies"
+                },
+                {
+                  "name": "ul"
+                }
+              ]
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "home-page",
+          "customElement": true,
+          "summary": "Home screen with top and random movie lists"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HomePage",
+          "declaration": {
+            "name": "HomePage",
+            "module": "public/scripts/screens/HomePage.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "home-page",
+          "declaration": {
+            "name": "HomePage",
+            "module": "public/scripts/screens/HomePage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/MovieDetails.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "MovieDetails",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#templatePromise",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#els",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#loadTemplate",
+              "static": true,
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "movie-details",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieDetails",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetails.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-details",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetails.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/MovieDetailsShadoDOMexample.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "MovieDetails",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#templatePromise",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#els",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#loadTemplate",
+              "static": true,
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "movie-details",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieDetails",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-details",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/services/API.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "API",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ baseURL: '/api/', fetch: async (service, args) => { const queryString = args ? new URLSearchParams(args).toString() : ''; try { const response = await fetch( `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`, ); return await response.json(); } catch (e) { console.error(e); } }, getTopMovies: async () => { return await API.fetch('movies/top'); }, getRandomMovies: async () => { return await API.fetch('movies/random'); }, getMovieById: async id => { return await API.fetch(`movies/${id}`); }, searchMovies: async (q, order, genre) => { return await API.fetch(`movies/search`, { q, order, genre }); }, }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "API",
+          "declaration": {
+            "name": "API",
+            "module": "public/scripts/services/API.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/components/AnimatedLoading.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Renders one or more animated skeleton placeholder bars while content loads.\n\nOn connect, the element appends child `div` elements styled with the global\n`.loading-wave` CSS animation. Configuration is read from `data-*` attributes\nwhen the element is inserted into the DOM.\n\nUse it like this:\n```html\n<animated-loading data-elements=\"5\" data-width=\"150px\" data-height=\"220px\">\n</animated-loading>\n```",
+          "name": "AnimatedLoading",
+          "attributes": [
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Number of placeholder bars to render (default: 1)",
+              "name": "data-elements"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "CSS width for each placeholder bar (default: 100px)",
+              "name": "data-width"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "CSS height for each placeholder bar (default: 10px)",
+              "name": "data-height"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "animated-loading",
+          "customElement": true,
+          "summary": "Animated skeleton loading placeholders"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AnimatedLoading",
+          "declaration": {
+            "name": "AnimatedLoading",
+            "module": "public/scripts/components/AnimatedLoading.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "animated-loading",
+          "declaration": {
+            "name": "AnimatedLoading",
+            "module": "public/scripts/components/AnimatedLoading.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/components/MovieItem.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Renders a single movie as a linked poster card for use in movie lists.\n\nMovie data is supplied via the constructor rather than HTML attributes.\nThe element is intended to be created programmatically and appended to a\nlist item.\n\nUse it like this:\n```js\nimport { MovieItem } from '../components/MovieItem.js';\n\nconst li = document.createElement('li');\nli.appendChild(new MovieItem({\n  title: 'Inception',\n  poster_url: '/posters/inception.jpg',\n  release_year: 2010,\n}));\n```",
+          "name": "MovieItem",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private",
+              "default": "movie"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "movie-item",
+          "customElement": true,
+          "summary": "Movie poster card for list views"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieItem",
+          "declaration": {
+            "name": "MovieItem",
+            "module": "public/scripts/components/MovieItem.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-item",
+          "declaration": {
+            "name": "MovieItem",
+            "module": "public/scripts/components/MovieItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/components/YouTubeEmbed.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Embeds a responsive YouTube video player from a standard watch URL.\n\nWhen `data-url` is set to a non-empty YouTube watch URL, the element\nreplaces its contents with an iframe pointed at the corresponding embed URL.\n\nUse it like this:\n```html\n<youtube-embed data-url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"></youtube-embed>\n```\n\nThe URL may also be set programmatically via the `dataset` API:\n```js\nelement.dataset.url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';\n```",
+          "name": "YouTubeEmbed",
+          "attributes": [
+            {
+              "name": "data-url",
+              "type": {
+                "text": "string"
+              },
+              "description": "Full YouTube watch URL containing a `v=` video ID query parameter"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "youtube-embed",
+          "customElement": true,
+          "summary": "Embeds a YouTube video from a watch URL"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "YouTubeEmbed",
+          "declaration": {
+            "name": "YouTubeEmbed",
+            "module": "public/scripts/components/YouTubeEmbed.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "youtube-embed",
+          "declaration": {
+            "name": "YouTubeEmbed",
+            "module": "public/scripts/components/YouTubeEmbed.js"
+          }
+        }
+      ]
+    }
+  ]
+}
