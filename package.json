@@ -1,0 +1,22 @@
+{
+  "name": "reelingit",
+  "version": "1.0.0",
+  "description": "This is a companion repository for the [Build a Fullstack App in Vanilla JS & Go](https://frontendmasters.com/courses/vanilla-js-go/) course on Frontend Masters. [![Frontend Masters](https://static.frontendmasters.com/assets/brand/logos/full.png)](https://frontendmasters.com/courses/vanilla-js-go/)",
+  "main": "index.js",
+  "scripts": {
+    "lint:format": "prettier --check ./public",
+    "fix:format": "prettier --write ./public"  ,
+    "lint:styles": "stylelint \"./public/**/*.css\"",
+    "fix:styles": "stylelint \"./public/**/*.css\" --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "prettier": "^3.9.5",
+    "stylelint": "^17.14.0",
+    "stylelint-config-recommended": "^18.0.0"
+  }
+}

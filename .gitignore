@@ -1,0 +1,40 @@
+# OS
+.DS_Store
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+
+# Go build and test outputs
+bin/
+tmp/
+*.test
+coverage.out
+
+# Node / frontend tooling
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.parcel-cache/
+.vite/
+.cache/
+dist/
+coverage/
+.nyc_output/
+.eslintcache
+.stylelintcache
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Logs and local scratch files
+*.log
+*.out
+*.http
