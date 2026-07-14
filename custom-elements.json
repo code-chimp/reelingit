@@ -10,208 +10,90 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/scripts/screens/HomePage.js",
+      "path": "public/scripts/base/TemplateElement.js",
       "declarations": [
         {
           "kind": "class",
-          "description": "Home screen showing this week's top movies and a random selection.\n\nOn connect, the element loads its HTML template, fetches movie data from\nthe API, and renders `movie-item` cards into two horizontal lists. The\nelement is intended to be created programmatically with no HTML attributes.\n\nUse it like this:\n```js\nimport { HomePage } from './screens/HomePage.js';\n\ndocument.querySelector('main').appendChild(new HomePage());\n```",
-          "name": "HomePage",
+          "description": "Base class for web components that load HTML templates from external files.\n\nSubclasses should define a static `TEMPLATE_PATH` property pointing to their\nHTML template file, and implement the `render()` method with component-specific logic.\nThe base class handles template loading, caching, and DOM injection via the\nconnectedCallback lifecycle.\n\nUse it like this:\n```js\nexport class MyElement extends TemplateElement {\n  static TEMPLATE_PATH = '/scripts/my-element.html';\n\n  async render() {\n    // Update DOM with data\n  }\n}\n\ncustomElements.define('my-element', MyElement);\n```",
+          "name": "TemplateElement",
           "members": [
             {
               "kind": "field",
-              "name": "#templatePromise",
-              "privacy": "private",
-              "static": true
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private"
             },
             {
               "kind": "method",
-              "name": "#loadTemplate",
+              "name": "_loadTemplate",
               "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
               "privacy": "private"
             },
             {
               "kind": "method",
               "name": "#initialize",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#render",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#renderMoviesToList",
               "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
               "parameters": [
                 {
-                  "name": "movies"
-                },
-                {
-                  "name": "ul"
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
                 }
-              ]
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
             }
           ],
           "superclass": {
             "name": "HTMLElement"
           },
-          "tagName": "home-page",
-          "customElement": true,
-          "summary": "Home screen with top and random movie lists"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HomePage",
-          "declaration": {
-            "name": "HomePage",
-            "module": "public/scripts/screens/HomePage.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "home-page",
-          "declaration": {
-            "name": "HomePage",
-            "module": "public/scripts/screens/HomePage.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/screens/MovieDetails.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "MovieDetails",
-          "members": [
-            {
-              "kind": "field",
-              "name": "#templatePromise",
-              "privacy": "private",
-              "static": true
-            },
-            {
-              "kind": "field",
-              "name": "#movie",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "#els",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#loadTemplate",
-              "static": true,
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#initialize",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#render",
-              "privacy": "private"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "movie-details",
+          "summary": "Base class for template-loading custom elements",
           "customElement": true
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "MovieDetails",
+          "name": "TemplateElement",
           "declaration": {
-            "name": "MovieDetails",
-            "module": "public/scripts/screens/MovieDetails.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "movie-details",
-          "declaration": {
-            "name": "MovieDetails",
-            "module": "public/scripts/screens/MovieDetails.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/screens/MovieDetailsShadoDOMexample.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "MovieDetails",
-          "members": [
-            {
-              "kind": "field",
-              "name": "#templatePromise",
-              "privacy": "private",
-              "static": true
-            },
-            {
-              "kind": "field",
-              "name": "#movie",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "#els",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#loadTemplate",
-              "static": true,
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#initialize",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#render",
-              "privacy": "private"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "movie-details",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "MovieDetails",
-          "declaration": {
-            "name": "MovieDetails",
-            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "movie-details",
-          "declaration": {
-            "name": "MovieDetails",
-            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
+            "name": "TemplateElement",
+            "module": "public/scripts/base/TemplateElement.js"
           }
         }
       ]
@@ -381,6 +263,271 @@
           "declaration": {
             "name": "YouTubeEmbed",
             "module": "public/scripts/components/YouTubeEmbed.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/HomePage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Home screen showing this week's top movies and a random selection.\n\nExtends TemplateElement to load its HTML template on connect, then fetches\nmovie data from the API and renders `movie-item` cards into two horizontal\nlists. The element is intended to be created programmatically with no HTML\nattributes.\n\nUse it like this:\n```js\nimport { HomePage } from './screens/HomePage.js';\n\ndocument.querySelector('main').appendChild(new HomePage());\n```",
+          "name": "HomePage",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/screens/home-page.html'"
+            },
+            {
+              "kind": "method",
+              "name": "#renderMoviesToList",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "movies"
+                },
+                {
+                  "name": "ul"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "module": "/public/scripts/base/TemplateElement.js"
+          },
+          "tagName": "home-page",
+          "customElement": true,
+          "summary": "Home screen with top and random movie lists"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HomePage",
+          "declaration": {
+            "name": "HomePage",
+            "module": "public/scripts/screens/HomePage.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "home-page",
+          "declaration": {
+            "name": "HomePage",
+            "module": "public/scripts/screens/HomePage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/MovieDetails.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "MovieDetails",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/screens/movie-details.html'"
+            },
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "render"
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "module": "/public/scripts/base/TemplateElement.js"
+          },
+          "tagName": "movie-details",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieDetails",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetails.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-details",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetails.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/screens/MovieDetailsShadoDOMexample.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "MovieDetails",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#templatePromise",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#els",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#loadTemplate",
+              "static": true,
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "movie-details",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieDetails",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-details",
+          "declaration": {
+            "name": "MovieDetails",
+            "module": "public/scripts/screens/MovieDetailsShadoDOMexample.js"
           }
         }
       ]

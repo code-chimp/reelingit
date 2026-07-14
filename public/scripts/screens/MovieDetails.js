@@ -1,70 +1,26 @@
+import { TemplateElement } from '../base/TemplateElement.js';
 import { API } from '../services/API.js';
 import '../components/YouTubeEmbed.js';
 
-export class MovieDetails extends HTMLElement {
-  static #templatePromise;
+export class MovieDetails extends TemplateElement {
+  static TEMPLATE_PATH = '/scripts/screens/movie-details.html';
 
   #movie;
-  #els;
-
-  static #loadTemplate() {
-    if (!this.#templatePromise) {
-      this.#templatePromise = fetch('/scripts/screens/movie-details.html')
-        .then(response => response.text())
-        .then(html => {
-          const parser = new DOMParser();
-          return parser.parseFromString(html, 'text/html').querySelector('template');
-        })
-        .catch(error => {
-          console.error('Failed to load template:', error);
-          throw error;
-        });
-    }
-    return this.#templatePromise;
-  }
-
-  constructor() {
-    super();
-  }
 
   connectedCallback() {
     this.#movie = { id: 14 };
-    this.#initialize();
+    super.connectedCallback();
   }
 
-  async #initialize() {
-    try {
-      const template = await MovieDetails.#loadTemplate();
-      const content = template.content.cloneNode(true);
-      this.appendChild(content);
-
-      this.#els = {
-        title: this.querySelector('h2'),
-        tagline: this.querySelector('h3'),
-        poster: this.querySelector('img'),
-        overview: this.querySelector('#overview'),
-        trailer: this.querySelector('#trailer'),
-        genres: this.querySelector('#genres'),
-        cast: this.querySelector('#cast'),
-        metadata: this.querySelector('#metadata'),
-      };
-
-      await this.#render();
-    } catch (error) {
-      console.error('Error initializing MovieDetails:', error);
-      alert('Failed to load movie details');
-    }
-  }
-
-  async #render() {
+  async render() {
     try {
       this.#movie = await API.getMovieById(this.#movie.id);
 
-      this.#els.title.textContent = this.#movie.title;
-      this.#els.tagline.textContent = this.#movie.tagline;
-      this.#els.poster.src = this.#movie.poster_url;
-      this.#els.trailer.dataset.url = this.#movie.trailer_url;
-      this.#els.metadata.innerHTML = `
+      this.querySelector('h2').textContent = this.#movie.title;
+      this.querySelector('h3').textContent = this.#movie.tagline;
+      this.querySelector('img').src = this.#movie.poster_url;
+      this.querySelector('#trailer').dataset.url = this.#movie.trailer_url;
+      this.querySelector('#metadata').innerHTML = `
         <dt>Release Year</dt>
         <dd>${this.#movie.release_year}</dd>
         <dt>Score</dt>
@@ -72,17 +28,17 @@ export class MovieDetails extends HTMLElement {
         <dt>Popularity</dt>
         <dd>${this.#movie.popularity}</dd>
       `;
-      this.#els.genres.innerHTML = this.#movie.genres
+      this.querySelector('#genres').innerHTML = this.#movie.genres
         .map(genre => `<li>${genre.name}</li>`)
         .join('');
-      this.#els.overview.textContent = this.#movie.overview;
+      this.querySelector('#overview').textContent = this.#movie.overview;
       this.#movie.casting.forEach(actor => {
         const li = document.createElement('li');
         li.innerHTML = `
           <img src="${actor.image_url ?? '/images/generic_actor.jpg'}" alt="Picture of ${actor.first_name} ${actor.last_name}">
           <p>${actor.first_name} ${actor.last_name}</p>
         `;
-        this.#els.cast.appendChild(li);
+        this.querySelector('#cast').appendChild(li);
       });
     } catch (error) {
       console.error('Failed to fetch movie details:', error);
