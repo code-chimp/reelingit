@@ -1,3 +1,5 @@
+// Package logger provides a simple leveled logger that writes info
+// messages to stdout and error messages to a log file.
 package logger
 
 import (
@@ -5,6 +7,7 @@ import (
 	"os"
 )
 
+// Logger writes info messages to stdout and error messages to a file.
 type Logger struct {
 	infoLogger  *log.Logger
 	errorLogger *log.Logger

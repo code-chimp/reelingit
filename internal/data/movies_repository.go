@@ -11,11 +11,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// MovieRepository is a MovieStorage implementation backed by PostgreSQL.
 type MovieRepository struct {
 	db     *sql.DB
 	logger *logger.Logger
 }
 
+// NewMovieRepository creates a MovieRepository that queries db, logging
+// query failures to log.
 func NewMovieRepository(db *sql.DB, log *logger.Logger) *MovieRepository {
 	return &MovieRepository{
 		db:     db,
@@ -23,10 +26,11 @@ func NewMovieRepository(db *sql.DB, log *logger.Logger) *MovieRepository {
 	}
 }
 
+// defaultLimit caps the number of rows returned by movie list queries.
 const defaultLimit = 20
 
+// GetTopMovies returns the defaultLimit movies with the highest popularity.
 func (r *MovieRepository) GetTopMovies() ([]models.Movie, error) {
-	// Fetch movies
 	query := `
 		SELECT id, tmdb_id, title, tagline, release_year, overview, score,
 		       popularity, language, poster_url, trailer_url
@@ -37,8 +41,8 @@ func (r *MovieRepository) GetTopMovies() ([]models.Movie, error) {
 	return r.getMovies(query)
 }
 
+// GetRandomMovies returns a random selection of up to defaultLimit movies.
 func (r *MovieRepository) GetRandomMovies() ([]models.Movie, error) {
-	// Fetch movies
 	randomQuery := `
 		SELECT id, tmdb_id, title, tagline, release_year, overview, score,
 		       popularity, language, poster_url, trailer_url
@@ -49,6 +53,9 @@ func (r *MovieRepository) GetRandomMovies() ([]models.Movie, error) {
 	return r.getMovies(randomQuery)
 }
 
+// getMovies runs query (expected to select the standard movie columns and
+// accept defaultLimit as its sole parameter) and scans the results into
+// a slice of models.Movie.
 func (r *MovieRepository) getMovies(query string) ([]models.Movie, error) {
 	rows, err := r.db.Query(query, defaultLimit)
 	if err != nil {
@@ -74,8 +81,10 @@ func (r *MovieRepository) getMovies(query string) ([]models.Movie, error) {
 	return movies, nil
 }
 
+// GetMovieByID returns the movie with the given id, including its genres,
+// cast, and keywords. It returns ErrMovieNotFound if no movie exists with
+// that id.
 func (r *MovieRepository) GetMovieByID(id int) (models.Movie, error) {
-	// Fetch movie
 	query := `
 		SELECT id, tmdb_id, title, tagline, release_year, overview, score,
 		       popularity, language, poster_url, trailer_url
@@ -107,6 +116,11 @@ func (r *MovieRepository) GetMovieByID(id int) (models.Movie, error) {
 	return m, nil
 }
 
+// SearchMoviesByName returns up to defaultLimit movies whose title or
+// overview contains name (case-insensitive). order selects the sort:
+// "score" (score desc), "name" (title asc), "date" (release year desc),
+// or anything else for the default of popularity desc. When genre is
+// non-nil, results are restricted to movies tagged with that genre ID.
 func (r *MovieRepository) SearchMoviesByName(name string, order string, genre *int) ([]models.Movie, error) {
 	orderBy := "popularity DESC"
 	switch order {
@@ -125,7 +139,6 @@ func (r *MovieRepository) SearchMoviesByName(name string, order string, genre *i
 								AND genre_id=` + strconv.Itoa(*genre) + `) = 1) `
 	}
 
-	// Fetch movies by name
 	query := `
 		SELECT id, tmdb_id, title, tagline, release_year, overview, score,
 		       popularity, language, poster_url, trailer_url
@@ -158,6 +171,7 @@ func (r *MovieRepository) SearchMoviesByName(name string, order string, genre *i
 	return movies, nil
 }
 
+// GetAllGenres returns every genre, ordered by ID.
 func (r *MovieRepository) GetAllGenres() ([]models.Genre, error) {
 	query := `SELECT id, name FROM genres ORDER BY id`
 	rows, err := r.db.Query(query)
@@ -179,7 +193,8 @@ func (r *MovieRepository) GetAllGenres() ([]models.Genre, error) {
 	return genres, nil
 }
 
-// fetchMovieRelations fetches genres, actors, and keywords for a movie
+// fetchMovieRelations populates m's Genres, Casting, and Keywords fields
+// by querying their respective join tables.
 func (r *MovieRepository) fetchMovieRelations(m *models.Movie) error {
 	// Fetch genres
 	genreQuery := `
@@ -250,6 +265,8 @@ func (r *MovieRepository) fetchMovieRelations(m *models.Movie) error {
 	return nil
 }
 
+// ErrMovieNotFound is returned by MovieRepository methods when a lookup
+// finds no matching movie.
 var (
 	ErrMovieNotFound = errors.New("movie not found")
 )

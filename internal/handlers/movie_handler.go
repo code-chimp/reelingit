@@ -1,3 +1,6 @@
+// Package handlers implements HTTP handlers for ReelingIt's JSON API,
+// translating requests into data.MovieStorage calls and encoding the
+// results (or errors) as JSON responses.
 package handlers
 
 import (
@@ -11,11 +14,14 @@ import (
 	"code-chimp.com/reelingit/internal/models"
 )
 
+// MovieHandler serves the /api/movies and /api/genres endpoints.
 type MovieHandler struct {
 	repository data.MovieStorage
 	logger     *logger.Logger
 }
 
+// NewMovieHandler creates a MovieHandler backed by repository, logging
+// failures to logger.
 func NewMovieHandler(repository data.MovieStorage, logger *logger.Logger) *MovieHandler {
 	return &MovieHandler{
 		repository: repository,
@@ -25,6 +31,8 @@ func NewMovieHandler(repository data.MovieStorage, logger *logger.Logger) *Movie
 
 // Utility functions
 
+// writeJSONResponse encodes data as JSON to w. If encoding fails, it logs
+// the failure and writes a 500 response.
 func (h *MovieHandler) writeJSONResponse(w http.ResponseWriter, data interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(data); err != nil {
@@ -35,6 +43,12 @@ func (h *MovieHandler) writeJSONResponse(w http.ResponseWriter, data interface{}
 	return nil
 }
 
+// handleStorageError inspects err from a repository call and, if non-nil,
+// writes the appropriate HTTP error response — 404 for
+// data.ErrMovieNotFound, 500 otherwise (also logging that case) — using
+// context as the response body / log message. It reports whether a
+// response was written, so callers should return immediately when it
+// reports true.
 func (h *MovieHandler) handleStorageError(w http.ResponseWriter, err error, context string) bool {
 	if err != nil {
 		if errors.Is(err, data.ErrMovieNotFound) {
@@ -48,6 +62,8 @@ func (h *MovieHandler) handleStorageError(w http.ResponseWriter, err error, cont
 	return false
 }
 
+// parseID parses idStr as an int. If it isn't one, it writes a 400
+// response and returns ok=false.
 func (h *MovieHandler) parseID(w http.ResponseWriter, idStr string) (int, bool) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -60,6 +76,8 @@ func (h *MovieHandler) parseID(w http.ResponseWriter, idStr string) (int, bool) 
 
 // Handler Functions
 
+// GetTopMovies handles GET /api/movies/top, responding with the current
+// highest-popularity movies.
 func (h *MovieHandler) GetTopMovies(w http.ResponseWriter, r *http.Request) {
 	movies, err := h.repository.GetTopMovies()
 
@@ -71,6 +89,8 @@ func (h *MovieHandler) GetTopMovies(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetRandomMovies handles GET /api/movies/random, responding with a
+// random selection of movies.
 func (h *MovieHandler) GetRandomMovies(w http.ResponseWriter, r *http.Request) {
 	movies, err := h.repository.GetRandomMovies()
 	if err != nil {
@@ -87,6 +107,9 @@ func (h *MovieHandler) GetRandomMovies(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// SearchMovies handles GET /api/movies/search, responding with movies
+// matching the "q" query parameter, optionally sorted via "order" and
+// filtered via "genre". An empty "q" yields an empty result set.
 func (h *MovieHandler) SearchMovies(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	order := r.URL.Query().Get("order")
@@ -114,6 +137,8 @@ func (h *MovieHandler) SearchMovies(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetMovie handles GET /api/movies/{id}, responding with the matching
+// movie or 404 if none exists.
 func (h *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, ok := h.parseID(w, idStr)
@@ -130,6 +155,7 @@ func (h *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetGenres handles GET /api/genres, responding with every genre.
 func (h *MovieHandler) GetGenres(w http.ResponseWriter, r *http.Request) {
 	genres, err := h.repository.GetAllGenres()
 	if h.handleStorageError(w, err, "Failed to get genres") {

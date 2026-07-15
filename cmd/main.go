@@ -1,3 +1,6 @@
+// Command reelingit runs the ReelingIt HTTP server: a JSON API under
+// /api/ backed by PostgreSQL, plus a static file server (with SPA
+// fallback) for the public/ frontend.
 package main
 
 import (
@@ -5,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"code-chimp.com/reelingit/internal/data"
 	"code-chimp.com/reelingit/internal/handlers"
@@ -14,12 +18,31 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// initializeLogger creates the app's Logger, exiting the process if the
+// log file can't be opened.
 func initializeLogger() *logger.Logger {
 	logInstance, err := logger.NewLogger("movie-service.log")
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 	return logInstance
+}
+
+// spaHandler serves static files out of root when the request path matches a
+// real file, and falls back to root/index.html otherwise so the client-side
+// router can handle deep links (e.g. /movies/90) on a hard navigation.
+func spaHandler(root string) http.HandlerFunc {
+	fs := http.FileServer(http.Dir(root))
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		path := filepath.Join(root, filepath.Clean(r.URL.Path))
+		if info, err := os.Stat(path); err == nil && !info.IsDir() {
+			fs.ServeHTTP(w, r)
+			return
+		}
+
+		http.ServeFile(w, r, filepath.Join(root, "index.html"))
+	}
 }
 
 func envOrDefault(key, defaultValue string) string {
@@ -30,13 +53,15 @@ func envOrDefault(key, defaultValue string) string {
 	return value
 }
 
+// main wires together the logger, database connection, repositories, and
+// HTTP handlers, then starts the server on PORT (default ":8080").
 func main() {
 	logInstance := initializeLogger()
 	defer logInstance.Close()
 
 	// app configuration
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Failed to load environment variables: %v", err)
+		logInstance.Info(".env file not found, relying on environment variables")
 	}
 
 	addr := envOrDefault("PORT", ":8080")
@@ -75,7 +100,7 @@ func main() {
 	mux.HandleFunc("GET /api/genres", moviesHandler.GetGenres)
 	mux.HandleFunc("/api/account/register", moviesHandler.GetGenres)
 	mux.HandleFunc("/api/account/authenticate", moviesHandler.GetGenres)
-	mux.Handle("/", http.FileServer(http.Dir("public")))
+	mux.Handle("/", spaHandler("public"))
 
 	// Start server
 	logInstance.Info("Server starting on " + addr)
