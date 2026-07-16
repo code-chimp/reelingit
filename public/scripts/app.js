@@ -57,6 +57,36 @@ window.app = {
     e.preventDefault();
 
     const q = document.querySelector('input[type=search]').value;
-    console.log(`Query: ${q}`);
+    app.Router.go(`/movies?q=${q}`);
+  },
+
+  /**
+   * Handles the movies screen's genre filter `<select>` change event by
+   * re-navigating to `/movies` with the chosen genre applied, preserving
+   * the current search query and sort order.
+   *
+   * @param {string} genre - Selected genre ID.
+   * @returns {void}
+   */
+  searchFilterChange: genre => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const order = params.get('order') ?? '';
+    app.Router.go(`/movies?q=${q}&genre=${genre}&order=${order}`);
+  },
+
+  /**
+   * Handles the movies screen's sort-order `<select>` change event by
+   * re-navigating to `/movies` with the chosen sort order applied,
+   * preserving the current search query and genre filter.
+   *
+   * @param {string} order - Selected sort order.
+   * @returns {void}
+   */
+  searchOrderChange: order => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const genre = params.get('genre') ?? '';
+    app.Router.go(`/movies?q=${q}&genre=${genre}&order=${order}`);
   },
 };

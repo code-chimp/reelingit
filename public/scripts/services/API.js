@@ -69,4 +69,11 @@ export const API = {
   searchMovies: async (q, order, genre) => {
     return await API.fetch(`movies/search`, { q, order, genre });
   },
+
+  /**
+   * @returns {Promise<Array<object>|undefined>} All genres
+   */
+  getGenres: async () => {
+    return await API.fetch('genres');
+  },
 };
