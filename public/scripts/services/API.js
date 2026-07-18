@@ -39,6 +39,33 @@ export const API = {
   },
 
   /**
+   * POSTs `args` as a JSON body to a path under `baseURL`.
+   *
+   * Unlike `fetch`, a network/parsing failure here also triggers the app's
+   * shared error modal (via `window.app`), since POST calls are typically
+   * user-initiated form submissions rather than background loads.
+   *
+   * @param {string} service - Path under `baseURL`, e.g. `account/register`
+   * @param {Record<string, unknown>} args - Request body, serialized as JSON
+   * @returns {Promise<any|undefined>} Parsed JSON response, or `undefined` on failure
+   */
+  post: async (service, args) => {
+    try {
+      const response = await fetch(API.baseURL + service, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(args),
+      });
+      return await response.json();
+    } catch (e) {
+      console.error(e);
+      app.showErrorModal();
+    }
+  },
+
+  /**
    * @returns {Promise<Array<object>|undefined>} This week's top movies
    */
   getTopMovies: async () => {
@@ -75,5 +102,34 @@ export const API = {
    */
   getGenres: async () => {
     return await API.fetch('genres');
+  },
+
+  /**
+   * Creates a new account via `POST /api/account/register`.
+   *
+   * @param {string} name - Display name
+   * @param {string} email - Account email, used as the login identifier
+   * @param {string} password - Plaintext password; hashed server-side
+   * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>}
+   *   Auth result. On success `jwt` is a signed token to store for
+   *   subsequent authenticated requests; on failure `success` is `false`
+   *   and `message` explains why (e.g. duplicate email).
+   */
+  register: async (name, email, password) => {
+    return await API.post('account/register', { name, email, password });
+  },
+
+  /**
+   * Logs an existing account in via `POST /api/account/authenticate`.
+   *
+   * @param {string} email - Account email
+   * @param {string} password - Plaintext password, checked against the stored hash
+   * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>}
+   *   Auth result. On success `jwt` is a signed token to store for
+   *   subsequent authenticated requests; on failure `success` is `false`
+   *   and `message` explains why (e.g. invalid credentials).
+   */
+  authenticate: async (email, password) => {
+    return await API.post('account/authenticate', { email, password });
   },
 };

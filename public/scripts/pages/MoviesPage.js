@@ -15,7 +15,7 @@ import { API } from '../services/API.js';
  * @tagname movie-page
  */
 export class MoviesPage extends TemplateElement {
-  static TEMPLATE_PATH = '/scripts/screens/movies-page.html';
+  static TEMPLATE_PATH = '/scripts/pages/movies-page.html';
 
   /**
    * Genre list cached across all `MoviesPage` instances, since it rarely
@@ -112,6 +112,43 @@ export class MoviesPage extends TemplateElement {
     if (this.#order) {
       this.querySelector('select#order').value = this.#order;
     }
+
+    this.querySelector('select#filter').addEventListener('change', e =>
+      this.#handleFilterChange(e),
+    );
+    this.querySelector('select#order').addEventListener('change', e =>
+      this.#handleOrderChange(e),
+    );
+  }
+
+  /**
+   * Handles the genre filter `<select>`'s change event by re-navigating to
+   * `/movies` with the chosen genre applied, preserving the current search
+   * query and sort order.
+   *
+   * @param {Event} e - Change event from `select#filter`.
+   * @returns {void}
+   */
+  #handleFilterChange(e) {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const order = params.get('order') ?? '';
+    app.Router.go(`/movies?q=${q}&genre=${e.target.value}&order=${order}`);
+  }
+
+  /**
+   * Handles the sort-order `<select>`'s change event by re-navigating to
+   * `/movies` with the chosen sort order applied, preserving the current
+   * search query and genre filter.
+   *
+   * @param {Event} e - Change event from `select#order`.
+   * @returns {void}
+   */
+  #handleOrderChange(e) {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const genre = params.get('genre') ?? '';
+    app.Router.go(`/movies?q=${q}&genre=${genre}&order=${e.target.value}`);
   }
 }
 

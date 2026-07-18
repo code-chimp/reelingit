@@ -21,7 +21,7 @@ import { routes } from './routes.js';
  * Router.go('/movies/14');
  * ```
  *
- * @summary Client-side router for swapping screens into `<main>`
+ * @summary Client-side router for swapping pages into `<main>`
  */
 export const Router = {
   /**

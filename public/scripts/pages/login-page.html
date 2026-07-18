@@ -1,0 +1,25 @@
+<template id="template-login">
+  <section>
+    <h2>Login into Your Account</h2>
+    <form>
+      <label for="login-email">Email</label>
+      <input
+        type="email"
+        id="login-email"
+        name="email"
+        placeholder="Email"
+        required
+        autocomplete="email" />
+      <label for="login-password">Password</label>
+      <input
+        type="password"
+        id="login-password"
+        name="password"
+        placeholder="Password"
+        required
+        autocomplete="current-password" />
+      <button>Log In</button>
+      <p>If you don't have an account, please <a href="/account/register">register</a>.</p>
+    </form>
+  </section>
+</template>

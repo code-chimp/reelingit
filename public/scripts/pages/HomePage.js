@@ -12,7 +12,7 @@ import { MovieItem } from '../components/MovieItem.js';
  *
  * Use it like this:
  * ```js
- * import { HomePage } from './screens/HomePage.js';
+ * import { HomePage } from './pages/HomePage.js';
  *
  * document.querySelector('main').appendChild(new HomePage());
  * ```
@@ -22,7 +22,7 @@ import { MovieItem } from '../components/MovieItem.js';
  * @tagname home-page
  */
 export class HomePage extends TemplateElement {
-  static TEMPLATE_PATH = '/scripts/screens/home-page.html';
+  static TEMPLATE_PATH = '/scripts/pages/home-page.html';
 
   #renderMoviesToList(movies, ul) {
     ul.innerHTML = '';

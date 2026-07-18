@@ -1,6 +1,9 @@
-import { HomePage } from '../screens/HomePage.js';
-import { MovieDetails } from '../screens/MovieDetails.js';
-import { MoviesPage } from '../screens/MoviesPage.js';
+import { AccountPage } from '../pages/AccountPage.js';
+import { HomePage } from '../pages/HomePage.js';
+import { LoginPage } from '../pages/LoginPage.js';
+import { MovieDetailsPage } from '../pages/MovieDetailsPage.js';
+import { MoviesPage } from '../pages/MoviesPage.js';
+import { RegisterPage } from '../pages/RegisterPage.js';
 
 /**
  * Route table consumed by `Router.js`.
@@ -27,19 +30,15 @@ export const routes = [
   },
   {
     path: /\/movies\/(\d+)/,
-    component: MovieDetails,
+    component: MovieDetailsPage,
   },
   {
     path: '/account/register',
-    component: MoviesPage, //RegisterPage
+    component: RegisterPage,
   },
   {
     path: '/account/login',
-    component: MoviesPage, //LoginPage
-  },
-  {
-    path: '/account/',
-    component: MoviesPage, //AccountPage,
+    component: LoginPage,
   },
   {
     path: '/account/favorites',
@@ -48,5 +47,9 @@ export const routes = [
   {
     path: '/account/watchlist',
     component: MoviesPage, //WatchlistPage
+  },
+  {
+    path: '/account',
+    component: AccountPage,
   },
 ];

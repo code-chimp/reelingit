@@ -28,3 +28,31 @@ type MovieStorage interface {
 	// GetAllGenres returns every genre, ordered by ID.
 	GetAllGenres() ([]models.Genre, error)
 }
+
+// AccountStorage is the persistence contract required to serve user
+// accounts. Implementations must return an error satisfying errors.Is(err,
+// ErrUserNotFound) when a lookup finds no matching user.
+type AccountStorage interface {
+	// Authenticate verifies email and password against the stored
+	// credentials. It returns ErrAuthenticationValidation if the
+	// credentials are missing, the email is unknown, or the password
+	// doesn't match.
+	Authenticate(email, password string) (bool, error)
+
+	// Register creates a new user account with name, email, and password.
+	// It returns ErrRegistrationValidation if any field is empty, or
+	// ErrUserAlreadyExists if a user with email already exists.
+	Register(name, email, password string) (bool, error)
+
+	// GetAccountDetails returns the user with the given email, including
+	// their favorite and watchlist movies. It returns ErrUserNotFound if
+	// no matching user exists.
+	GetAccountDetails(email string) (models.User, error)
+
+	// SaveCollection adds the movie with movieID to user's "favorite" or
+	// "watchlist" collection (collection must be one of those two
+	// values). It is idempotent: adding a movie already in the
+	// collection succeeds without creating a duplicate entry. It returns
+	// ErrUserNotFound if user doesn't match an existing account.
+	SaveCollection(user models.User, movieID int, collection string) (bool, error)
+}

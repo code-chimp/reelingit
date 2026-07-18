@@ -85,21 +85,22 @@ func main() {
 
 	// initialize repositories
 	movieRepo := data.NewMovieRepository(db, logInstance)
+	accountRepo := data.NewAccountRepository(db, logInstance)
 
 	// initialize handlers
 	moviesHandler := handlers.NewMovieHandler(movieRepo, logInstance)
-	// authHandler := handlers.NewAuthHandler(userStorage, jwt, logInstance)
+	accountHandler := handlers.NewAccountHandler(accountRepo, logInstance)
 
 	// routing
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /api/movies/random", moviesHandler.GetRandomMovies)
-	mux.HandleFunc("GET /api/movies/top", moviesHandler.GetTopMovies)
 	mux.HandleFunc("GET /api/movies/search", moviesHandler.SearchMovies)
+	mux.HandleFunc("GET /api/movies/top", moviesHandler.GetTopMovies)
 	mux.HandleFunc("GET /api/movies/{id}", moviesHandler.GetMovie)
 	mux.HandleFunc("GET /api/genres", moviesHandler.GetGenres)
-	mux.HandleFunc("/api/account/register", moviesHandler.GetGenres)
-	mux.HandleFunc("/api/account/authenticate", moviesHandler.GetGenres)
+	mux.HandleFunc("POST /api/account/register", accountHandler.Register)
+	mux.HandleFunc("POST /api/account/authenticate", accountHandler.Authenticate)
 	mux.Handle("/", spaHandler("public"))
 
 	// Start server

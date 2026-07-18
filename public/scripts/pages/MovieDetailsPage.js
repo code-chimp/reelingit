@@ -14,9 +14,9 @@ import '../components/YouTubeEmbed.js';
  *
  * Use it like this:
  * ```js
- * import { MovieDetails } from './screens/MovieDetails.js';
+ * import { MovieDetailsPage } from './pages/MovieDetailsPage.js';
  *
- * const screen = new MovieDetails();
+ * const screen = new MovieDetailsPage();
  * screen.params = ['14'];
  * document.querySelector('main').appendChild(screen);
  * ```
@@ -25,8 +25,8 @@ import '../components/YouTubeEmbed.js';
  * @tag movie-details
  * @tagname movie-details
  */
-export class MovieDetails extends TemplateElement {
-  static TEMPLATE_PATH = '/scripts/screens/movie-details.html';
+export class MovieDetailsPage extends TemplateElement {
+  static TEMPLATE_PATH = '/scripts/pages/movie-details-page.html';
 
   #movie;
 
@@ -83,4 +83,4 @@ export class MovieDetails extends TemplateElement {
   }
 }
 
-customElements.define('movie-details', MovieDetails);
+customElements.define('movie-details', MovieDetailsPage);

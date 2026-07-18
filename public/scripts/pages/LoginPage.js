@@ -1,0 +1,57 @@
+import { TemplateElement } from '../base/TemplateElement.js';
+import { API } from '../services/API.js';
+import { Router } from '../services/Router.js';
+import Store from '../services/Store.js';
+
+/**
+ * Account login screen.
+ *
+ * Renders the login form from its template and wires up its submit handler
+ * on connect.
+ *
+ * @summary Login screen
+ * @tag login-page
+ * @tagname login-page
+ */
+export class LoginPage extends TemplateElement {
+  static TEMPLATE_PATH = '/scripts/pages/login-page.html';
+
+  async render() {
+    this.querySelector('form').addEventListener('submit', e => this.#handleSubmit(e));
+  }
+
+  /**
+   * Handles the login form's submit event: validates the entered
+   * email/password client-side, then calls `API.authenticate`. On success,
+   * stores the returned JWT in `Store` and navigates to `/account`; on
+   * failure (client validation or invalid credentials), shows the error
+   * modal without navigating away from the form.
+   *
+   * @param {SubmitEvent} e - Submit event from the login `<form>`, expected
+   *   to have `email` and `password` fields.
+   * @returns {Promise<void>}
+   */
+  async #handleSubmit(e) {
+    e.preventDefault();
+    const { email, password } = Object.fromEntries(new FormData(e.target));
+    const errors = [];
+
+    if (email.length < 4) errors.push('Please enter your email');
+    if (password.length < 8) errors.push('Password must be at least 8 characters long');
+
+    if (errors.length > 0) {
+      app.showErrorModal(errors.join('\n'), false);
+      return;
+    }
+
+    const response = await API.authenticate(email, password);
+    if (response.success) {
+      Store.jwt = response.jwt;
+      Router.go('/account');
+    } else {
+      app.showErrorModal(response.message, false);
+    }
+  }
+}
+
+customElements.define('login-page', LoginPage);
