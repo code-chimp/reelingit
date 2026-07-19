@@ -10,7 +10,7 @@ export default {
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: 'scripts/pages/*.html', dest: '.' },
+        { src: 'scripts/pages/**/*.html', dest: '.' },
         {
           // logo.png is already emitted (hashed) via index.html's <img> tag, so
           // it's excluded here. icon.png is kept: it's also referenced by its

@@ -6,11 +6,14 @@
   "scripts": {
     "build:app": "vite build",
     "manifest:gen": "cem analyze",
+    "fix": "run-p fix:*",
     "lint": "run-p lint:*",
     "lint:format": "prettier --check ./public",
     "fix:format": "prettier --write ./public",
     "lint:styles": "stylelint \"./public/**/*.css\"",
     "fix:styles": "stylelint \"./public/**/*.css\" --fix",
+    "lint:js": "eslint \"./public/**/*.js\"",
+    "fix:js": "eslint \"./public/**/*.js\" --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +22,9 @@
   "type": "commonjs",
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0",
+    "globals": "^17.7.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.9.5",
     "stylelint": "^17.14.0",

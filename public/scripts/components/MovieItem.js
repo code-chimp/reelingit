@@ -1,3 +1,5 @@
+import { ROUTES } from '../constants.js';
+
 /**
  * Renders a single movie as a linked poster card for use in movie lists.
  *
@@ -34,7 +36,7 @@ export class MovieItem extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = `
-      <a class="navlink" href="/movies/${this.#movie.id}">
+      <a class="navlink" href="${ROUTES.MOVIES}/${this.#movie.id}">
         <article>
           <img src="${this.#movie.poster_url}" alt="${this.#movie.title} Poster" />
           <p>${this.#movie.title} (${this.#movie.release_year})</p>

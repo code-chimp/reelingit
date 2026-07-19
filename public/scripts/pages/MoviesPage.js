@@ -1,6 +1,7 @@
 import { TemplateElement } from '../base/TemplateElement.js';
 import { MovieItem } from '../components/MovieItem.js';
 import { API } from '../services/API.js';
+import { ROUTES } from '../constants.js';
 
 /**
  * Movie search/listing screen. Reads `q`, `order`, and `genre` from the
@@ -133,7 +134,7 @@ export class MoviesPage extends TemplateElement {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
     const order = params.get('order') ?? '';
-    app.Router.go(`/movies?q=${q}&genre=${e.target.value}&order=${order}`);
+    app.Router.go(`${ROUTES.MOVIES}?q=${q}&genre=${e.target.value}&order=${order}`);
   }
 
   /**
@@ -148,7 +149,7 @@ export class MoviesPage extends TemplateElement {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
     const genre = params.get('genre') ?? '';
-    app.Router.go(`/movies?q=${q}&genre=${genre}&order=${e.target.value}`);
+    app.Router.go(`${ROUTES.MOVIES}?q=${q}&genre=${genre}&order=${e.target.value}`);
   }
 }
 

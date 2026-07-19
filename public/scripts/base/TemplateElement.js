@@ -137,5 +137,6 @@ export class TemplateElement extends HTMLElement {
    */
   async handleError(e) {
     // override if needed
+    console.error(e);
   }
 }

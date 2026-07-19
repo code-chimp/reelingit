@@ -1,3 +1,5 @@
+// Package token creates, validates, and reads the signing secret for the
+// app's HMAC-signed JWTs.
 package token
 
 import (

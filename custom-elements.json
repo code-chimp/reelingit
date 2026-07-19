@@ -10,6 +10,145 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/scripts/constants.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "ROUTES",
+          "type": {
+            "text": "{\n *   HOME: string,\n *   MOVIES: string,\n *   ACCOUNT: string,\n *   ACCOUNT_LOGIN: string,\n *   ACCOUNT_REGISTER: string,\n *   ACCOUNT_FAVORITES: string,\n *   ACCOUNT_WATCHLIST: string,\n * }"
+          },
+          "default": "{ HOME: '/', MOVIES: '/movies', ACCOUNT: '/account', ACCOUNT_LOGIN: '/account/login', ACCOUNT_REGISTER: '/account/register', ACCOUNT_FAVORITES: '/account/favorites', ACCOUNT_WATCHLIST: '/account/watchlist', }",
+          "description": "Route paths used both to declare `routes.js`'s route table and to\nnavigate to those routes elsewhere (`Router.go(...)`, `<a href>`\nconstruction). Keeping both sides in sync via these constants means a\nrenamed route can't drift out of sync between the two."
+        },
+        {
+          "kind": "variable",
+          "name": "COLLECTIONS",
+          "type": {
+            "text": "{ FAVORITE: string, WATCHLIST: string }"
+          },
+          "default": "{ FAVORITE: 'favorite', WATCHLIST: 'watchlist', }",
+          "description": "Named movie collections a user can save a movie to, via\n`API.saveToCollection`."
+        },
+        {
+          "kind": "variable",
+          "name": "STORAGE_KEYS",
+          "type": {
+            "text": "{ JWT: string }"
+          },
+          "default": "{ JWT: 'jwt', }",
+          "description": "`localStorage` keys used by `Store.js` to persist session state across\npage reloads."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ROUTES",
+          "declaration": {
+            "name": "ROUTES",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "COLLECTIONS",
+          "declaration": {
+            "name": "COLLECTIONS",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "STORAGE_KEYS",
+          "declaration": {
+            "name": "STORAGE_KEYS",
+            "module": "public/scripts/constants.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/public/assets/index-kXUs_5c8.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "o"
+        },
+        {
+          "kind": "variable",
+          "name": "c"
+        },
+        {
+          "kind": "variable",
+          "name": "u"
+        },
+        {
+          "kind": "variable",
+          "name": "f"
+        },
+        {
+          "kind": "variable",
+          "name": "m"
+        },
+        {
+          "kind": "variable",
+          "name": "b"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-item",
+          "declaration": {
+            "name": "o",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "home-page",
+          "declaration": {
+            "name": "c",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "youtube-embed",
+          "declaration": {
+            "name": "u",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-details",
+          "declaration": {
+            "name": "f",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-page",
+          "declaration": {
+            "name": "m",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "animated-loading",
+          "declaration": {
+            "name": "b",
+            "module": "dist/public/assets/index-kXUs_5c8.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/scripts/base/TemplateElement.js",
       "declarations": [
         {
@@ -94,6 +233,104 @@
           "declaration": {
             "name": "TemplateElement",
             "module": "public/scripts/base/TemplateElement.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/services/API.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "API",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ baseURL: '/api/', /** * Fetches JSON from a path under `baseURL`, optionally appending `args` as * a query string. * * Errors (network failures, non-JSON responses) are caught and logged * rather than thrown, so a failed call resolves to `undefined` instead of * rejecting. * * @param {string} service - Path under `baseURL`, e.g. `movies/top` * @param {Record<string, string>} [args] - Query params to append * @returns {Promise<any|undefined>} Parsed JSON response, or `undefined` on failure */ fetch: async (service, args) => { const queryString = args ? new URLSearchParams(args).toString() : ''; try { const response = await fetch( `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`, { headers: { Authorization: app.Store.jwt ? `Bearer ${app.Store.jwt}` : null, }, }, ); return await response.json(); } catch (e) { console.error(e); } }, /** * POSTs `args` as a JSON body to a path under `baseURL`. * * Unlike `fetch`, a network/parsing failure here also triggers the app's * shared error modal (via `window.app`), since POST calls are typically * user-initiated form submissions rather than background loads. * * @param {string} service - Path under `baseURL`, e.g. `account/register` * @param {Record<string, unknown>} args - Request body, serialized as JSON * @returns {Promise<any|undefined>} Parsed JSON response, or `undefined` on failure */ post: async (service, args) => { try { const response = await fetch(API.baseURL + service, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: app.Store.jwt ? `Bearer ${app.Store.jwt}` : null, }, body: JSON.stringify(args), }); return await response.json(); } catch (e) { console.error(e); app.showErrorModal(); } }, /** * @returns {Promise<Array<object>|undefined>} This week's top movies */ getTopMovies: async () => { return await API.fetch('movies/top'); }, /** * @returns {Promise<Array<object>|undefined>} A random selection of movies */ getRandomMovies: async () => { return await API.fetch('movies/random'); }, /** * @param {number|string} id - Movie ID * @returns {Promise<object|undefined>} The movie matching `id` */ getMovieById: async id => { return await API.fetch(`movies/${id}`); }, /** * @param {string} q - Search text * @param {string} [order] - Sort order * @param {string} [genre] - Genre filter * @returns {Promise<Array<object>|undefined>} Movies matching the search criteria */ searchMovies: async (q, order, genre) => { return await API.fetch(`movies/search`, { q, order, genre }); }, /** * @returns {Promise<Array<object>|undefined>} All genres */ getGenres: async () => { return await API.fetch('genres'); }, /** * Creates a new account via `POST /api/account/register`. * * @param {string} name - Display name * @param {string} email - Account email, used as the login identifier * @param {string} password - Plaintext password; hashed server-side * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. duplicate email). */ register: async (name, email, password) => { return await API.post('account/register', { name, email, password }); }, /** * Logs an existing account in via `POST /api/account/authenticate`. * * @param {string} email - Account email * @param {string} password - Plaintext password, checked against the stored hash * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. invalid credentials). */ authenticate: async (email, password) => { return await API.post('account/authenticate', { email, password }); }, /** * Fetches the current user's favorited movies via * `GET /api/account/favorites`. Requires an authenticated session (a JWT * in `app.Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>|undefined>} The user's favorited movies, or * `undefined` on failure (in which case the user is redirected to `ROUTES.ACCOUNT`) */ getFavorites: async () => { try { return await API.fetch('account/favorites'); } catch (e) { console.error('Error fetching favorites:', e); app.Router.go(ROUTES.ACCOUNT); } }, /** * Fetches the current user's watchlisted movies via * `GET /api/account/watchlist`. Requires an authenticated session (a JWT * in `app.Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>|undefined>} The user's watchlisted movies, or * `undefined` on failure (in which case the user is redirected to `ROUTES.ACCOUNT`) */ getWatchlist: async () => { try { return await API.fetch('account/watchlist'); } catch (e) { console.error('Error fetching watchlist:', e); app.Router.go(ROUTES.ACCOUNT); } }, /** * Saves a movie to a named collection for the current user via * `POST /api/account/save-to-collection`. Requires an authenticated * session (a JWT in `app.Store.jwt`). * * @param {number|string} movie_id - ID of the movie to save * @param {string} collection - Target collection, one of `COLLECTIONS`'s values * @returns {Promise<{success: boolean, message: string}|undefined>} Save result, or `undefined` on failure */ saveToCollection: async (movie_id, collection) => { return await API.post('account/save-to-collection', { movie_id, collection }); }, }",
+          "description": "Client for the ReelingIt backend's `/api/` movie endpoints.\n\nUse it like this:\n```js\nimport { API } from './services/API.js';\n\nconst movie = await API.getMovieById(14);\n```",
+          "summary": "Movie API client"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "API",
+          "declaration": {
+            "name": "API",
+            "module": "public/scripts/services/API.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/services/Router.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "Router",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ /** * Wires up browser back/forward navigation, delegates clicks on * `a.navlink` anchors to client-side navigation (instead of a full page * load), and renders the screen for the current URL. Call once on app * startup. * * @returns {void} */ init: () => { window.addEventListener('popstate', () => { Router.go(window.location.pathname, false); }); document.addEventListener('click', e => { const anchor = e.target.closest('a.navlink'); if (!anchor) return; e.preventDefault(); Router.go(anchor.getAttribute('href')); }); // go to the initial route Router.go(location.pathname + location.search); }, /** * Matches `route` against the declared `routes` and mounts the matching * screen component into `<main>`, replacing any current content, using a * view transition (`document.startViewTransition`) when the browser * supports it. Falls back to a \"Page not found\" heading when no route * matches. If the matched route is `protected` and the user isn't logged * in (per `app.Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN` * instead of mounting anything. * * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`) * @param {boolean} [addToHistory=true] - Whether to push `route` onto browser history. Pass `false` when responding to a `popstate` event, since the entry already exists. * @returns {void} */ go: (route, addToHistory = true) => { if (addToHistory) { history.pushState(null, null, route); } const mainElement = document.querySelector('main'); const routePath = route.split('?')[0]; let protectedRoute = false; let screenElement = null; for (const r of routes) { if (typeof r.path === 'string' && r.path === routePath) { screenElement = new r.component(); protectedRoute = r.protected ?? false; break; } else if (r.path instanceof RegExp) { const match = route.match(r.path); if (match) { screenElement = new r.component(); screenElement.params = match.slice(1); protectedRoute = r.protected ?? false; break; } } } if (protectedRoute && !app.Store.loggedIn) { app.Router.go(ROUTES.ACCOUNT_LOGIN); return; } if (screenElement == null) { screenElement = document.createElement('h1'); screenElement.textContent = 'Page not found'; } function navigate() { mainElement.innerHTML = null; mainElement.appendChild(screenElement); } const oldPage = mainElement.firstChild; if (!document.startViewTransition) { navigate(); return; } if (oldPage) { mainElement.style.viewTransitionName = 'old'; } screenElement.style.viewTransitionName = 'new'; document.startViewTransition(() => { navigate(); }); }, }",
+          "description": "Client-side router that swaps the contents of `<main>` based on the URL,\nwithout a full page reload.\n\nRoutes are declared in `routes.js` as `{ path, component, protected }`\nentries, where `path` is either an exact string or a `RegExp` matched\nagainst the full route (including query string). For a `RegExp` match,\nany capture groups are exposed to the mounted screen as\n`screenElement.params`. Routes marked `protected` redirect to\n`ROUTES.ACCOUNT_LOGIN` instead of mounting when the user isn't logged in.\n\nUse it like this:\n```js\nimport { Router } from './services/Router.js';\n\nwindow.addEventListener('DOMContentLoaded', () => Router.init());\n```\n\nTo navigate programmatically (e.g. from a link click handler):\n```js\nRouter.go('/movies/14');\n```",
+          "summary": "Client-side router for swapping pages into `<main>`"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "Router",
+          "declaration": {
+            "name": "Router",
+            "module": "public/scripts/services/Router.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/services/Store.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "proxiedStore",
+          "default": "new Proxy(Store, { set(target, prop, value) { if (prop === 'jwt') { if (!value) { localStorage.removeItem(STORAGE_KEYS.JWT); } else { localStorage.setItem(STORAGE_KEYS.JWT, value); } } target[prop] = value; return true; }, })"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "proxiedStore",
+            "module": "public/scripts/services/Store.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/services/routes.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "routes",
+          "type": {
+            "text": "Array<{ path: string|RegExp, component: CustomElementConstructor, protected?: boolean }>"
+          },
+          "default": "[ { path: ROUTES.HOME, component: HomePage, }, { path: ROUTES.MOVIES, component: MoviesPage, }, { path: /\\/movies\\/(\\d+)/, component: MovieDetailsPage, }, { path: ROUTES.ACCOUNT_REGISTER, component: RegisterPage, }, { path: ROUTES.ACCOUNT_LOGIN, component: LoginPage, }, { path: ROUTES.ACCOUNT_FAVORITES, component: FavoritesPage, protected: true, }, { path: ROUTES.ACCOUNT_WATCHLIST, component: WatchlistPage, protected: true, }, { path: ROUTES.ACCOUNT, component: AccountPage, protected: true, }, ]",
+          "description": "Route table consumed by `Router.js`.\n\nEach entry is `{ path, component, protected }`, where `path` is either an\nexact string match against the route's pathname, or a `RegExp` matched\nagainst the full route (including query string) whose capture groups are\nexposed to the mounted component as `screenElement.params`. `component`\nis a `HTMLElement` subclass constructed with `new` and appended to\n`<main>`. `protected` (default `false`) requires the user to be logged\nin; `Router.go` redirects to `ROUTES.ACCOUNT_LOGIN` instead of mounting\nthe component when it's `true` and the user isn't."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "routes",
+          "declaration": {
+            "name": "routes",
+            "module": "public/scripts/services/routes.js"
           }
         }
       ]
@@ -245,232 +482,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/scripts/services/API.js",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "API",
-          "type": {
-            "text": "object"
-          },
-          "default": "{ baseURL: '/api/', /** * Fetches JSON from a path under `baseURL`, optionally appending `args` as * a query string. * * Errors (network failures, non-JSON responses) are caught and logged * rather than thrown, so a failed call resolves to `undefined` instead of * rejecting. * * @param {string} service - Path under `baseURL`, e.g. `movies/top` * @param {Record<string, string>} [args] - Query params to append * @returns {Promise<any|undefined>} Parsed JSON response, or `undefined` on failure */ fetch: async (service, args) => { const queryString = args ? new URLSearchParams(args).toString() : ''; try { const response = await fetch( `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`, ); return await response.json(); } catch (e) { console.error(e); } }, /** * POSTs `args` as a JSON body to a path under `baseURL`. * * Unlike `fetch`, a network/parsing failure here also triggers the app's * shared error modal (via `window.app`), since POST calls are typically * user-initiated form submissions rather than background loads. * * @param {string} service - Path under `baseURL`, e.g. `account/register` * @param {Record<string, unknown>} args - Request body, serialized as JSON * @returns {Promise<any|undefined>} Parsed JSON response, or `undefined` on failure */ post: async (service, args) => { try { const response = await fetch(API.baseURL + service, { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify(args), }); return await response.json(); } catch (e) { console.error(e); app.showErrorModal(); } }, /** * @returns {Promise<Array<object>|undefined>} This week's top movies */ getTopMovies: async () => { return await API.fetch('movies/top'); }, /** * @returns {Promise<Array<object>|undefined>} A random selection of movies */ getRandomMovies: async () => { return await API.fetch('movies/random'); }, /** * @param {number|string} id - Movie ID * @returns {Promise<object|undefined>} The movie matching `id` */ getMovieById: async id => { return await API.fetch(`movies/${id}`); }, /** * @param {string} q - Search text * @param {string} [order] - Sort order * @param {string} [genre] - Genre filter * @returns {Promise<Array<object>|undefined>} Movies matching the search criteria */ searchMovies: async (q, order, genre) => { return await API.fetch(`movies/search`, { q, order, genre }); }, /** * @returns {Promise<Array<object>|undefined>} All genres */ getGenres: async () => { return await API.fetch('genres'); }, /** * Creates a new account via `POST /api/account/register`. * * @param {string} name - Display name * @param {string} email - Account email, used as the login identifier * @param {string} password - Plaintext password; hashed server-side * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. duplicate email). */ register: async (name, email, password) => { return await API.post('account/register', { name, email, password }); }, /** * Logs an existing account in via `POST /api/account/authenticate`. * * @param {string} email - Account email * @param {string} password - Plaintext password, checked against the stored hash * @returns {Promise<{success: boolean, message: string, jwt: string}|undefined>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. invalid credentials). */ authenticate: async (email, password) => { return await API.post('account/authenticate', { email, password }); }, }",
-          "description": "Client for the ReelingIt backend's `/api/` movie endpoints.\n\nUse it like this:\n```js\nimport { API } from './services/API.js';\n\nconst movie = await API.getMovieById(14);\n```",
-          "summary": "Movie API client"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "API",
-          "declaration": {
-            "name": "API",
-            "module": "public/scripts/services/API.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/services/Router.js",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "Router",
-          "type": {
-            "text": "object"
-          },
-          "default": "{ /** * Wires up browser back/forward navigation and renders the screen for the * current URL. Call once on app startup. * * @returns {void} */ init: () => { window.addEventListener('popstate', () => { Router.go(window.location.pathname, false); }); document.addEventListener('click', e => { const anchor = e.target.closest('a.navlink'); if (!anchor) return; e.preventDefault(); Router.go(anchor.getAttribute('href')); }); // go to the initial route Router.go(location.pathname + location.search); }, /** * Matches `route` against the declared `routes` and mounts the matching * screen component into `<main>`, replacing any current content. Falls * back to a \"Page not found\" heading when no route matches. * * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`) * @param {boolean} [addToHistory=true] - Whether to push `route` onto browser history. Pass `false` when responding to a `popstate` event, since the entry already exists. * @returns {void} */ go: (route, addToHistory = true) => { if (addToHistory) { history.pushState(null, null, route); } const mainElement = document.querySelector('main'); const routePath = route.split('?')[0]; let screenElement = null; for (const r of routes) { if (typeof r.path === 'string' && r.path === routePath) { screenElement = new r.component(); break; } else if (r.path instanceof RegExp) { const match = route.match(r.path); if (match) { screenElement = new r.component(); screenElement.params = match.slice(1); break; } } } if (screenElement == null) { screenElement = document.createElement('h1'); screenElement.textContent = 'Page not found'; } function navigate() { mainElement.innerHTML = null; mainElement.appendChild(screenElement); } const oldPage = mainElement.firstChild; if (!document.startViewTransition) { navigate(); return; } if (oldPage) { mainElement.style.viewTransitionName = 'old'; } screenElement.style.viewTransitionName = 'new'; document.startViewTransition(() => { navigate(); }); }, }",
-          "description": "Client-side router that swaps the contents of `<main>` based on the URL,\nwithout a full page reload.\n\nRoutes are declared in `routes.js` as `{ path, component }` pairs, where\n`path` is either an exact string or a `RegExp` matched against the full\nroute (including query string). For a `RegExp` match, any capture groups\nare exposed to the mounted screen as `screenElement.params`.\n\nUse it like this:\n```js\nimport { Router } from './services/Router.js';\n\nwindow.addEventListener('DOMContentLoaded', () => Router.init());\n```\n\nTo navigate programmatically (e.g. from a link click handler):\n```js\nRouter.go('/movies/14');\n```",
-          "summary": "Client-side router for swapping pages into `<main>`"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "Router",
-          "declaration": {
-            "name": "Router",
-            "module": "public/scripts/services/Router.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/services/Store.js",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "proxiedStore",
-          "default": "new Proxy(Store, { set(target, prop, value) { if (prop === 'jwt') { localStorage.setItem('jwt', value); } target[prop] = value; return true; }, get(target, prop) { return target[prop]; }, })"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "proxiedStore",
-            "module": "public/scripts/services/Store.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/services/routes.js",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "routes",
-          "type": {
-            "text": "Array<{ path: string|RegExp, component: CustomElementConstructor }>"
-          },
-          "default": "[ { path: '/', component: HomePage, }, { path: '/movies', component: MoviesPage, }, { path: /\\/movies\\/(\\d+)/, component: MovieDetailsPage, }, { path: '/account/register', component: RegisterPage, }, { path: '/account/login', component: LoginPage, }, { path: '/account/favorites', component: MoviesPage, //FavoritesPage, }, { path: '/account/watchlist', component: MoviesPage, //WatchlistPage }, { path: '/account', component: AccountPage, }, ]",
-          "description": "Route table consumed by `Router.js`.\n\nEach entry is `{ path, component }`, where `path` is either an exact\nstring match against the route's pathname, or a `RegExp` matched against\nthe full route (including query string) whose capture groups are exposed\nto the mounted component as `screenElement.params`. `component` is a\n`HTMLElement` subclass constructed with `new` and appended to `<main>`.\n\nEntries with a placeholder comment (e.g. `MoviesPage, //RegisterPage`)\nare temporary stand-ins pending their real screen component."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "routes",
-          "declaration": {
-            "name": "routes",
-            "module": "public/scripts/services/routes.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/pages/AccountPage.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "AccountPage",
-          "members": [
-            {
-              "kind": "field",
-              "name": "TEMPLATE_PATH",
-              "type": {
-                "text": "string"
-              },
-              "static": true,
-              "default": "'/scripts/pages/account-page.html'"
-            },
-            {
-              "kind": "field",
-              "name": "_templatePromise",
-              "static": true,
-              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
-              "type": {
-                "text": "Promise<HTMLTemplateElement>"
-              },
-              "privacy": "private",
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "_loadTemplate",
-              "static": true,
-              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
-              "return": {
-                "type": {
-                  "text": "Promise<HTMLTemplateElement>"
-                }
-              },
-              "privacy": "private",
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#initialize",
-              "privacy": "private",
-              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "render",
-              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleError",
-              "parameters": [
-                {
-                  "name": "e",
-                  "description": "The error that occurred during initialization",
-                  "type": {
-                    "text": "Error"
-                  }
-                }
-              ],
-              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            }
-          ],
-          "superclass": {
-            "name": "TemplateElement",
-            "module": "/public/scripts/base/TemplateElement.js"
-          },
-          "tagName": "account-page",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "AccountPage",
-          "declaration": {
-            "name": "AccountPage",
-            "module": "public/scripts/pages/AccountPage.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "account-page",
-          "declaration": {
-            "name": "AccountPage",
-            "module": "public/scripts/pages/AccountPage.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "public/scripts/pages/HomePage.js",
       "declarations": [
         {
@@ -613,160 +624,11 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/scripts/pages/LoginPage.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Account login screen.\n\nRenders the login form from its template and wires up its submit handler\non connect.",
-          "name": "LoginPage",
-          "members": [
-            {
-              "kind": "field",
-              "name": "TEMPLATE_PATH",
-              "type": {
-                "text": "string"
-              },
-              "static": true,
-              "default": "'/scripts/pages/login-page.html'"
-            },
-            {
-              "kind": "method",
-              "name": "render",
-              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#handleSubmit",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "e",
-                  "description": "Submit event from the login `<form>`, expected\nto have `email` and `password` fields.",
-                  "type": {
-                    "text": "SubmitEvent"
-                  }
-                }
-              ],
-              "description": "Handles the login form's submit event: validates the entered\nemail/password client-side, then calls `API.authenticate`. On success,\nstores the returned JWT in `Store` and navigates to `/account`; on\nfailure (client validation or invalid credentials), shows the error\nmodal without navigating away from the form.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_templatePromise",
-              "static": true,
-              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
-              "type": {
-                "text": "Promise<HTMLTemplateElement>"
-              },
-              "privacy": "private",
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "_loadTemplate",
-              "static": true,
-              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
-              "return": {
-                "type": {
-                  "text": "Promise<HTMLTemplateElement>"
-                }
-              },
-              "privacy": "private",
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#initialize",
-              "privacy": "private",
-              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleError",
-              "parameters": [
-                {
-                  "name": "e",
-                  "description": "The error that occurred during initialization",
-                  "type": {
-                    "text": "Error"
-                  }
-                }
-              ],
-              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "inheritedFrom": {
-                "name": "TemplateElement",
-                "module": "public/scripts/base/TemplateElement.js"
-              }
-            }
-          ],
-          "superclass": {
-            "name": "TemplateElement",
-            "module": "/public/scripts/base/TemplateElement.js"
-          },
-          "tagName": "login-page",
-          "customElement": true,
-          "summary": "Login screen"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "LoginPage",
-          "declaration": {
-            "name": "LoginPage",
-            "module": "public/scripts/pages/LoginPage.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "login-page",
-          "declaration": {
-            "name": "LoginPage",
-            "module": "public/scripts/pages/LoginPage.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "public/scripts/pages/MovieDetailsPage.js",
       "declarations": [
         {
           "kind": "class",
-          "description": "Movie detail screen showing poster, trailer, metadata, genres, overview,\nand cast for a single movie.\n\nThe movie is identified by `params`, which `Router` sets on the element\ninstance (from the `/movies/(\\d+)` route's capture group) before it is\nconnected to the DOM. `params[0]` is the movie ID as a string; it falls\nback to `14` when the element is created without a route match, e.g. in a\nstandalone test harness.\n\nUse it like this:\n```js\nimport { MovieDetailsPage } from './pages/MovieDetailsPage.js';\n\nconst screen = new MovieDetailsPage();\nscreen.params = ['14'];\ndocument.querySelector('main').appendChild(screen);\n```",
+          "description": "Movie detail screen showing poster, trailer, metadata, genres, overview,\nand cast for a single movie.\n\nThe movie is identified by `params`, which `Router` sets on the element\ninstance (from the `/movies/(\\d+)` route's capture group) before it is\nconnected to the DOM. `params[0]` is the movie ID as a string; it falls\nback to `14` when the element is created without a route match, e.g. in a\nstandalone test harness.\n\nAlso wires up the \"Add to Favorites\"/\"Add to Watchlist\" buttons to save\nthe movie to the corresponding `COLLECTIONS` entry for the current user,\nredirecting to `ROUTES.ACCOUNT` first if they aren't logged in.\n\nUse it like this:\n```js\nimport { MovieDetailsPage } from './pages/MovieDetailsPage.js';\n\nconst screen = new MovieDetailsPage();\nscreen.params = ['14'];\ndocument.querySelector('main').appendChild(screen);\n```",
           "name": "MovieDetailsPage",
           "members": [
             {
@@ -782,6 +644,33 @@
               "kind": "field",
               "name": "#movie",
               "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#saveToCollection",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "movie_id",
+                  "description": "ID of the movie to save.",
+                  "type": {
+                    "text": "number|string"
+                  }
+                },
+                {
+                  "name": "collection",
+                  "description": "Target collection, one of `COLLECTIONS`'s values.",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Saves movie_id to the given named collection (a `COLLECTIONS` value) for\nthe current user, then navigates to that collection's page. If the user\nisn't logged in, navigates to `ROUTES.ACCOUNT` instead of attempting the\nsave. Shows the shared error modal if the save request fails.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
             },
             {
               "kind": "method",
@@ -1114,7 +1003,568 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/scripts/pages/RegisterPage.js",
+      "path": "public/scripts/pages/account/AccountPage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AccountPage",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/pages/account/account-page.html'"
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "module": "/public/scripts/base/TemplateElement.js"
+          },
+          "tagName": "account-page",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AccountPage",
+          "declaration": {
+            "name": "AccountPage",
+            "module": "public/scripts/pages/account/AccountPage.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "account-page",
+          "declaration": {
+            "name": "AccountPage",
+            "module": "public/scripts/pages/account/AccountPage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/pages/account/CollectionPage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Generic screen for listing a named collection of movies (e.g. favorites\nor watchlist), fetched via a caller-supplied endpoint.\n\nThis class has no custom element tag of its own and is never registered\nvia `customElements.define`; it's meant to be subclassed by a concrete\npage (e.g. `FavoritesPage`, `WatchlistPage`) that supplies the endpoint\nand title and registers its own tag.\n\nUse it like this:\n```js\nclass FavoritesPage extends CollectionPage {\n  constructor() {\n    super(API.getFavorites, 'Favorite Movies');\n  }\n}\n\ncustomElements.define('favorites-page', FavoritesPage);\n```",
+          "name": "CollectionPage",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/pages/account/collection-page.html'"
+            },
+            {
+              "kind": "field",
+              "name": "#endpoint",
+              "privacy": "private",
+              "default": "endpoint"
+            },
+            {
+              "kind": "field",
+              "name": "#title",
+              "privacy": "private",
+              "default": "title"
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Fetches the collection via `#endpoint` and renders it as a list of\n`MovieItem`s under `#title`. Shows a \"No movies in collection\" message\nwhen the collection is empty or the fetch fails.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "module": "/public/scripts/base/TemplateElement.js"
+          },
+          "summary": "Base screen for listing a named movie collection"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CollectionPage",
+          "declaration": {
+            "name": "CollectionPage",
+            "module": "public/scripts/pages/account/CollectionPage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/pages/account/FavoritesPage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Screen listing the current user's favorited movies.\n\nA protected route (per `routes.js`); `Router` only mounts this after\nconfirming the user is logged in.",
+          "name": "FavoritesPage",
+          "superclass": {
+            "name": "CollectionPage",
+            "module": "/public/scripts/pages/account/CollectionPage.js"
+          },
+          "tagName": "favorites-page",
+          "customElement": true,
+          "summary": "Favorited-movies screen",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/pages/account/collection-page.html'",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#endpoint",
+              "privacy": "private",
+              "default": "endpoint",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#title",
+              "privacy": "private",
+              "default": "title",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Fetches the collection via `#endpoint` and renders it as a list of\n`MovieItem`s under `#title`. Shows a \"No movies in collection\" message\nwhen the collection is empty or the fetch fails.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FavoritesPage",
+          "declaration": {
+            "name": "FavoritesPage",
+            "module": "public/scripts/pages/account/FavoritesPage.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "favorites-page",
+          "declaration": {
+            "name": "FavoritesPage",
+            "module": "public/scripts/pages/account/FavoritesPage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/pages/account/LoginPage.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Account login screen.\n\nRenders the login form from its template and wires up its submit handler\non connect.",
+          "name": "LoginPage",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/pages/account/login-page.html'"
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleSubmit",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "Submit event from the login `<form>`, expected\nto have `email` and `password` fields.",
+                  "type": {
+                    "text": "SubmitEvent"
+                  }
+                }
+              ],
+              "description": "Handles the login form's submit event: validates the entered\nemail/password client-side, then calls `API.authenticate`. On success,\nstores the returned JWT in `Store` and navigates to `/account`; on\nfailure (client validation or invalid credentials), shows the error\nmodal without navigating away from the form.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "module": "/public/scripts/base/TemplateElement.js"
+          },
+          "tagName": "login-page",
+          "customElement": true,
+          "summary": "Login screen"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LoginPage",
+          "declaration": {
+            "name": "LoginPage",
+            "module": "public/scripts/pages/account/LoginPage.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "login-page",
+          "declaration": {
+            "name": "LoginPage",
+            "module": "public/scripts/pages/account/LoginPage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/pages/account/RegisterPage.js",
       "declarations": [
         {
           "kind": "class",
@@ -1128,7 +1578,7 @@
                 "text": "string"
               },
               "static": true,
-              "default": "'/scripts/pages/register-page.html'"
+              "default": "'/scripts/pages/account/register-page.html'"
             },
             {
               "kind": "method",
@@ -1248,7 +1698,7 @@
           "name": "RegisterPage",
           "declaration": {
             "name": "RegisterPage",
-            "module": "public/scripts/pages/RegisterPage.js"
+            "module": "public/scripts/pages/account/RegisterPage.js"
           }
         },
         {
@@ -1256,87 +1706,160 @@
           "name": "register-page",
           "declaration": {
             "name": "RegisterPage",
-            "module": "public/scripts/pages/RegisterPage.js"
+            "module": "public/scripts/pages/account/RegisterPage.js"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "dist/public/assets/index-kXUs_5c8.js",
+      "path": "public/scripts/pages/account/WatchlistPage.js",
       "declarations": [
         {
-          "kind": "variable",
-          "name": "o"
-        },
-        {
-          "kind": "variable",
-          "name": "c"
-        },
-        {
-          "kind": "variable",
-          "name": "u"
-        },
-        {
-          "kind": "variable",
-          "name": "f"
-        },
-        {
-          "kind": "variable",
-          "name": "m"
-        },
-        {
-          "kind": "variable",
-          "name": "b"
+          "kind": "class",
+          "description": "Screen listing the current user's watchlisted movies.\n\nA protected route (per `routes.js`); `Router` only mounts this after\nconfirming the user is logged in.",
+          "name": "WatchlistPage",
+          "superclass": {
+            "name": "CollectionPage",
+            "module": "/public/scripts/pages/account/CollectionPage.js"
+          },
+          "tagName": "watchlist-page",
+          "customElement": true,
+          "summary": "Watchlist screen",
+          "members": [
+            {
+              "kind": "field",
+              "name": "TEMPLATE_PATH",
+              "type": {
+                "text": "string"
+              },
+              "static": true,
+              "default": "'/scripts/pages/account/collection-page.html'",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#endpoint",
+              "privacy": "private",
+              "default": "endpoint",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#title",
+              "privacy": "private",
+              "default": "title",
+              "inheritedFrom": {
+                "name": "CollectionPage",
+                "module": "public/scripts/pages/account/CollectionPage.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Fetches the collection via `#endpoint` and renders it as a list of\n`MovieItem`s under `#title`. Shows a \"No movies in collection\" message\nwhen the collection is empty or the fetch fails.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "TemplateElement",
+                "module": "public/scripts/base/TemplateElement.js"
+              }
+            }
+          ]
         }
       ],
       "exports": [
         {
-          "kind": "custom-element-definition",
-          "name": "movie-item",
+          "kind": "js",
+          "name": "WatchlistPage",
           "declaration": {
-            "name": "o",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
+            "name": "WatchlistPage",
+            "module": "public/scripts/pages/account/WatchlistPage.js"
           }
         },
         {
           "kind": "custom-element-definition",
-          "name": "home-page",
+          "name": "watchlist-page",
           "declaration": {
-            "name": "c",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "youtube-embed",
-          "declaration": {
-            "name": "u",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "movie-details",
-          "declaration": {
-            "name": "f",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "movie-page",
-          "declaration": {
-            "name": "m",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "animated-loading",
-          "declaration": {
-            "name": "b",
-            "module": "dist/public/assets/index-kXUs_5c8.js"
+            "name": "WatchlistPage",
+            "module": "public/scripts/pages/account/WatchlistPage.js"
           }
         }
       ]

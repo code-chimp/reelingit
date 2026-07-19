@@ -1,10 +1,12 @@
+// Command install is a one-off utility for loading a SQL dump into the
+// ReelingIt PostgreSQL database.
 package main
 
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -28,7 +30,7 @@ func main() {
 
 	// Read the SQL file
 	sqlFilePath := "database-dump.sql" // Adjust this to your .sql file path
-	sqlContent, err := ioutil.ReadFile(sqlFilePath)
+	sqlContent, err := os.ReadFile(sqlFilePath)
 	if err != nil {
 		log.Fatal("Failed to read SQL file:", err)
 	}
@@ -71,12 +73,4 @@ func main() {
 	}
 
 	fmt.Println("SQL script execution completed.")
-}
-
-// Helper function to get min of two ints
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

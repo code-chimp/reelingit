@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from '../constants.js';
+
 /**
  * Client-side auth session store, backed by `localStorage` so the JWT
  * survives page reloads.
@@ -27,8 +29,8 @@ const Store = {
   },
 };
 
-if (localStorage.getItem('jwt')) {
-  Store.jwt = localStorage.getItem('jwt');
+if (localStorage.getItem(STORAGE_KEYS.JWT)) {
+  Store.jwt = localStorage.getItem(STORAGE_KEYS.JWT);
 }
 
 // Wraps Store so that `set` also persists to localStorage, keeping the two
@@ -36,13 +38,14 @@ if (localStorage.getItem('jwt')) {
 const proxiedStore = new Proxy(Store, {
   set(target, prop, value) {
     if (prop === 'jwt') {
-      localStorage.setItem('jwt', value);
+      if (!value) {
+        localStorage.removeItem(STORAGE_KEYS.JWT);
+      } else {
+        localStorage.setItem(STORAGE_KEYS.JWT, value);
+      }
     }
     target[prop] = value;
     return true;
-  },
-  get(target, prop) {
-    return target[prop];
   },
 });
 

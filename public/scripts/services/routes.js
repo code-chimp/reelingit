@@ -1,31 +1,34 @@
-import { AccountPage } from '../pages/AccountPage.js';
+import { AccountPage } from '../pages/account/AccountPage.js';
+import { FavoritesPage } from '../pages/account/FavoritesPage.js';
 import { HomePage } from '../pages/HomePage.js';
-import { LoginPage } from '../pages/LoginPage.js';
+import { LoginPage } from '../pages/account/LoginPage.js';
 import { MovieDetailsPage } from '../pages/MovieDetailsPage.js';
 import { MoviesPage } from '../pages/MoviesPage.js';
-import { RegisterPage } from '../pages/RegisterPage.js';
+import { RegisterPage } from '../pages/account/RegisterPage.js';
+import { WatchlistPage } from '../pages/account/WatchlistPage.js';
+import { ROUTES } from '../constants.js';
 
 /**
  * Route table consumed by `Router.js`.
  *
- * Each entry is `{ path, component }`, where `path` is either an exact
- * string match against the route's pathname, or a `RegExp` matched against
- * the full route (including query string) whose capture groups are exposed
- * to the mounted component as `screenElement.params`. `component` is a
- * `HTMLElement` subclass constructed with `new` and appended to `<main>`.
+ * Each entry is `{ path, component, protected }`, where `path` is either an
+ * exact string match against the route's pathname, or a `RegExp` matched
+ * against the full route (including query string) whose capture groups are
+ * exposed to the mounted component as `screenElement.params`. `component`
+ * is a `HTMLElement` subclass constructed with `new` and appended to
+ * `<main>`. `protected` (default `false`) requires the user to be logged
+ * in; `Router.go` redirects to `ROUTES.ACCOUNT_LOGIN` instead of mounting
+ * the component when it's `true` and the user isn't.
  *
- * Entries with a placeholder comment (e.g. `MoviesPage, //RegisterPage`)
- * are temporary stand-ins pending their real screen component.
- *
- * @type {Array<{ path: string|RegExp, component: CustomElementConstructor }>}
+ * @type {Array<{ path: string|RegExp, component: CustomElementConstructor, protected?: boolean }>}
  */
 export const routes = [
   {
-    path: '/',
+    path: ROUTES.HOME,
     component: HomePage,
   },
   {
-    path: '/movies',
+    path: ROUTES.MOVIES,
     component: MoviesPage,
   },
   {
@@ -33,23 +36,26 @@ export const routes = [
     component: MovieDetailsPage,
   },
   {
-    path: '/account/register',
+    path: ROUTES.ACCOUNT_REGISTER,
     component: RegisterPage,
   },
   {
-    path: '/account/login',
+    path: ROUTES.ACCOUNT_LOGIN,
     component: LoginPage,
   },
   {
-    path: '/account/favorites',
-    component: MoviesPage, //FavoritesPage,
+    path: ROUTES.ACCOUNT_FAVORITES,
+    component: FavoritesPage,
+    protected: true,
   },
   {
-    path: '/account/watchlist',
-    component: MoviesPage, //WatchlistPage
+    path: ROUTES.ACCOUNT_WATCHLIST,
+    component: WatchlistPage,
+    protected: true,
   },
   {
-    path: '/account',
+    path: ROUTES.ACCOUNT,
     component: AccountPage,
+    protected: true,
   },
 ];

@@ -1,3 +1,5 @@
+import { ROUTES } from '../constants.js';
+
 /**
  * Client for the ReelingIt backend's `/api/` movie endpoints.
  *
@@ -30,6 +32,11 @@ export const API = {
     try {
       const response = await fetch(
         `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`,
+        {
+          headers: {
+            Authorization: app.Store.jwt ? `Bearer ${app.Store.jwt}` : null,
+          },
+        },
       );
 
       return await response.json();
@@ -55,6 +62,7 @@ export const API = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: app.Store.jwt ? `Bearer ${app.Store.jwt}` : null,
         },
         body: JSON.stringify(args),
       });
@@ -131,5 +139,52 @@ export const API = {
    */
   authenticate: async (email, password) => {
     return await API.post('account/authenticate', { email, password });
+  },
+
+  /**
+   * Fetches the current user's favorited movies via
+   * `GET /api/account/favorites`. Requires an authenticated session (a JWT
+   * in `app.Store.jwt`), since the backend derives the user from it.
+   *
+   * @returns {Promise<Array<object>|undefined>} The user's favorited movies, or
+   *   `undefined` on failure (in which case the user is redirected to `ROUTES.ACCOUNT`)
+   */
+  getFavorites: async () => {
+    try {
+      return await API.fetch('account/favorites');
+    } catch (e) {
+      console.error('Error fetching favorites:', e);
+      app.Router.go(ROUTES.ACCOUNT);
+    }
+  },
+
+  /**
+   * Fetches the current user's watchlisted movies via
+   * `GET /api/account/watchlist`. Requires an authenticated session (a JWT
+   * in `app.Store.jwt`), since the backend derives the user from it.
+   *
+   * @returns {Promise<Array<object>|undefined>} The user's watchlisted movies, or
+   *   `undefined` on failure (in which case the user is redirected to `ROUTES.ACCOUNT`)
+   */
+  getWatchlist: async () => {
+    try {
+      return await API.fetch('account/watchlist');
+    } catch (e) {
+      console.error('Error fetching watchlist:', e);
+      app.Router.go(ROUTES.ACCOUNT);
+    }
+  },
+
+  /**
+   * Saves a movie to a named collection for the current user via
+   * `POST /api/account/save-to-collection`. Requires an authenticated
+   * session (a JWT in `app.Store.jwt`).
+   *
+   * @param {number|string} movie_id - ID of the movie to save
+   * @param {string} collection - Target collection, one of `COLLECTIONS`'s values
+   * @returns {Promise<{success: boolean, message: string}|undefined>} Save result, or `undefined` on failure
+   */
+  saveToCollection: async (movie_id, collection) => {
+    return await API.post('account/save-to-collection', { movie_id, collection });
   },
 };

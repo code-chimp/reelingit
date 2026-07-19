@@ -1,13 +1,16 @@
 import { routes } from './routes.js';
+import { ROUTES } from '../constants.js';
 
 /**
  * Client-side router that swaps the contents of `<main>` based on the URL,
  * without a full page reload.
  *
- * Routes are declared in `routes.js` as `{ path, component }` pairs, where
- * `path` is either an exact string or a `RegExp` matched against the full
- * route (including query string). For a `RegExp` match, any capture groups
- * are exposed to the mounted screen as `screenElement.params`.
+ * Routes are declared in `routes.js` as `{ path, component, protected }`
+ * entries, where `path` is either an exact string or a `RegExp` matched
+ * against the full route (including query string). For a `RegExp` match,
+ * any capture groups are exposed to the mounted screen as
+ * `screenElement.params`. Routes marked `protected` redirect to
+ * `ROUTES.ACCOUNT_LOGIN` instead of mounting when the user isn't logged in.
  *
  * Use it like this:
  * ```js
@@ -25,8 +28,10 @@ import { routes } from './routes.js';
  */
 export const Router = {
   /**
-   * Wires up browser back/forward navigation and renders the screen for the
-   * current URL. Call once on app startup.
+   * Wires up browser back/forward navigation, delegates clicks on
+   * `a.navlink` anchors to client-side navigation (instead of a full page
+   * load), and renders the screen for the current URL. Call once on app
+   * startup.
    *
    * @returns {void}
    */
@@ -49,8 +54,12 @@ export const Router = {
 
   /**
    * Matches `route` against the declared `routes` and mounts the matching
-   * screen component into `<main>`, replacing any current content. Falls
-   * back to a "Page not found" heading when no route matches.
+   * screen component into `<main>`, replacing any current content, using a
+   * view transition (`document.startViewTransition`) when the browser
+   * supports it. Falls back to a "Page not found" heading when no route
+   * matches. If the matched route is `protected` and the user isn't logged
+   * in (per `app.Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN`
+   * instead of mounting anything.
    *
    * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`)
    * @param {boolean} [addToHistory=true] - Whether to push `route` onto browser history. Pass `false` when responding to a `popstate` event, since the entry already exists.
@@ -63,20 +72,28 @@ export const Router = {
 
     const mainElement = document.querySelector('main');
     const routePath = route.split('?')[0];
+    let protectedRoute = false;
     let screenElement = null;
 
     for (const r of routes) {
       if (typeof r.path === 'string' && r.path === routePath) {
         screenElement = new r.component();
+        protectedRoute = r.protected ?? false;
         break;
       } else if (r.path instanceof RegExp) {
         const match = route.match(r.path);
         if (match) {
           screenElement = new r.component();
           screenElement.params = match.slice(1);
+          protectedRoute = r.protected ?? false;
           break;
         }
       }
+    }
+
+    if (protectedRoute && !app.Store.loggedIn) {
+      app.Router.go(ROUTES.ACCOUNT_LOGIN);
+      return;
     }
 
     if (screenElement == null) {

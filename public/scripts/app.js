@@ -9,7 +9,7 @@
  * @summary App bootstrap: element registration, router startup, window.app
  */
 import './pages/HomePage.js';
-import { API } from './services/API.js';
+import { ROUTES } from './constants.js';
 import { Router } from './services/Router.js';
 import Store from './services/Store.js';
 // load universal components
@@ -20,7 +20,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 window.app = {
-  API,
   Router,
   Store,
 
@@ -36,7 +35,7 @@ window.app = {
     modal.querySelector('p').textContent = message;
     modal.showModal();
     if (goToHome) {
-      app.Router.go('/');
+      app.Router.go(ROUTES.HOME);
     }
   },
 
@@ -59,6 +58,6 @@ window.app = {
     e.preventDefault();
 
     const q = document.querySelector('input[type=search]').value;
-    app.Router.go(`/movies?q=${q}`);
+    app.Router.go(`${ROUTES.MOVIES}?q=${q}`);
   },
 };

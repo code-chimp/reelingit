@@ -29,53 +29,6 @@ func NewMovieHandler(repository data.MovieStorage, logger *logger.Logger) *Movie
 	}
 }
 
-// Utility functions
-
-// writeJSONResponse encodes data as JSON to w. If encoding fails, it logs
-// the failure and writes a 500 response.
-func (h *MovieHandler) writeJSONResponse(w http.ResponseWriter, data interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		h.logger.Error("Failed to encode response", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return err
-	}
-	return nil
-}
-
-// handleStorageError inspects err from a repository call and, if non-nil,
-// writes the appropriate HTTP error response — 404 for
-// data.ErrMovieNotFound, 500 otherwise (also logging that case) — using
-// context as the response body / log message. It reports whether a
-// response was written, so callers should return immediately when it
-// reports true.
-func (h *MovieHandler) handleStorageError(w http.ResponseWriter, err error, context string) bool {
-	if err != nil {
-		if errors.Is(err, data.ErrMovieNotFound) {
-			http.Error(w, context, http.StatusNotFound)
-			return true
-		}
-		h.logger.Error(context, err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return true
-	}
-	return false
-}
-
-// parseID parses idStr as an int. If it isn't one, it writes a 400
-// response and returns ok=false.
-func (h *MovieHandler) parseID(w http.ResponseWriter, idStr string) (int, bool) {
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		h.logger.Error("Invalid ID format", err)
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
-		return 0, false
-	}
-	return id, true
-}
-
-// Handler Functions
-
 // GetTopMovies handles GET /api/movies/top, responding with the current
 // highest-popularity movies.
 func (h *MovieHandler) GetTopMovies(w http.ResponseWriter, r *http.Request) {
@@ -164,4 +117,47 @@ func (h *MovieHandler) GetGenres(w http.ResponseWriter, r *http.Request) {
 	if h.writeJSONResponse(w, genres) == nil {
 		h.logger.Info("Successfully served genres")
 	}
+}
+
+// writeJSONResponse encodes data as JSON to w. If encoding fails, it logs
+// the failure and writes a 500 response.
+func (h *MovieHandler) writeJSONResponse(w http.ResponseWriter, data interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		h.logger.Error("Failed to encode response", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
+
+// handleStorageError inspects err from a repository call and, if non-nil,
+// writes the appropriate HTTP error response — 404 for
+// data.ErrMovieNotFound, 500 otherwise (also logging that case) — using
+// context as the response body / log message. It reports whether a
+// response was written, so callers should return immediately when it
+// reports true.
+func (h *MovieHandler) handleStorageError(w http.ResponseWriter, err error, context string) bool {
+	if err != nil {
+		if errors.Is(err, data.ErrMovieNotFound) {
+			http.Error(w, context, http.StatusNotFound)
+			return true
+		}
+		h.logger.Error(context, err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return true
+	}
+	return false
+}
+
+// parseID parses idStr as an int. If it isn't one, it writes a 400
+// response and returns ok=false.
+func (h *MovieHandler) parseID(w http.ResponseWriter, idStr string) (int, bool) {
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.logger.Error("Invalid ID format", err)
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return 0, false
+	}
+	return id, true
 }

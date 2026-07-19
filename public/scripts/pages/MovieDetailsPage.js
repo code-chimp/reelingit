@@ -1,6 +1,7 @@
+import { COLLECTIONS, ROUTES } from '../constants.js';
 import { TemplateElement } from '../base/TemplateElement.js';
-import { API } from '../services/API.js';
 import '../components/YouTubeEmbed.js';
+import { API } from '../services/API.js';
 
 /**
  * Movie detail screen showing poster, trailer, metadata, genres, overview,
@@ -11,6 +12,10 @@ import '../components/YouTubeEmbed.js';
  * connected to the DOM. `params[0]` is the movie ID as a string; it falls
  * back to `14` when the element is created without a route match, e.g. in a
  * standalone test harness.
+ *
+ * Also wires up the "Add to Favorites"/"Add to Watchlist" buttons to save
+ * the movie to the corresponding `COLLECTIONS` entry for the current user,
+ * redirecting to `ROUTES.ACCOUNT` first if they aren't logged in.
  *
  * Use it like this:
  * ```js
@@ -29,6 +34,39 @@ export class MovieDetailsPage extends TemplateElement {
   static TEMPLATE_PATH = '/scripts/pages/movie-details-page.html';
 
   #movie;
+
+  /**
+   * Saves movie_id to the given named collection (a `COLLECTIONS` value) for
+   * the current user, then navigates to that collection's page. If the user
+   * isn't logged in, navigates to `ROUTES.ACCOUNT` instead of attempting the
+   * save. Shows the shared error modal if the save request fails.
+   *
+   * @param {number|string} movie_id - ID of the movie to save.
+   * @param {string} collection - Target collection, one of `COLLECTIONS`'s values.
+   * @returns {Promise<void>}
+   */
+  async #saveToCollection(movie_id, collection) {
+    if (app.Store.loggedIn) {
+      try {
+        const response = await API.saveToCollection(movie_id, collection);
+        if (response.success) {
+          switch (collection) {
+            case COLLECTIONS.FAVORITE:
+              app.Router.go(ROUTES.ACCOUNT_FAVORITES);
+              break;
+            case COLLECTIONS.WATCHLIST:
+              app.Router.go(ROUTES.ACCOUNT_WATCHLIST);
+          }
+        } else {
+          app.showErrorModal("We couldn't save the movie.");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      app.Router.go(ROUTES.ACCOUNT);
+    }
+  }
 
   /**
    * Reads the movie ID out of `params` (set by `Router` before this element
@@ -75,6 +113,14 @@ export class MovieDetailsPage extends TemplateElement {
           <p>${actor.first_name} ${actor.last_name}</p>
         `;
         this.querySelector('#cast').appendChild(li);
+      });
+
+      this.querySelector('#button-favorites').addEventListener('click', () => {
+        this.#saveToCollection(this.#movie.id, COLLECTIONS.FAVORITE);
+      });
+
+      this.querySelector('#button-watchlist').addEventListener('click', () => {
+        this.#saveToCollection(this.#movie.id, COLLECTIONS.WATCHLIST);
       });
     } catch (error) {
       console.error('Failed to fetch movie details:', error);

@@ -101,6 +101,12 @@ func main() {
 	mux.HandleFunc("GET /api/genres", moviesHandler.GetGenres)
 	mux.HandleFunc("POST /api/account/register", accountHandler.Register)
 	mux.HandleFunc("POST /api/account/authenticate", accountHandler.Authenticate)
+	mux.Handle("GET /api/account/favorites",
+		accountHandler.AuthMiddleware(http.HandlerFunc(accountHandler.GetFavorites)))
+	mux.Handle("GET /api/account/watchlist",
+		accountHandler.AuthMiddleware(http.HandlerFunc(accountHandler.GetWatchlist)))
+	mux.Handle("POST /api/account/save-to-collection",
+		accountHandler.AuthMiddleware(http.HandlerFunc(accountHandler.SaveToCollection)))
 	mux.Handle("/", spaHandler("public"))
 
 	// Start server

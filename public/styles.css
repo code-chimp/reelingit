@@ -1,7 +1,8 @@
 :root {
   --background-surface: #171d1a;
   --primaryColor: #232926;
-  --secondaryColor: #838981;
+  --secondaryColor: #a3a9a1;
+  --placeholderColor: #6b6f68;
   --textColor: #e1e1e1;
   --highlightColor: #56bce8;
   --color5: #ddb892;
@@ -110,7 +111,7 @@ input[type='search'] {
   color: var(--primaryColor);
 
   &::placeholder {
-    color: var(--secondaryColor);
+    color: var(--placeholderColor);
   }
 }
 
@@ -156,7 +157,7 @@ h3 {
 
 @keyframes loading-wave {
   0% {
-    background-position: 0% 50%;
+    background-position: 0 50%;
   }
 
   100% {
@@ -209,6 +210,8 @@ button {
   border-radius: 5px;
   cursor: pointer;
   margin: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 /* Modal Styles */

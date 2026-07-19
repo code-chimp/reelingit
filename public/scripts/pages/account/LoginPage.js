@@ -1,7 +1,6 @@
-import { TemplateElement } from '../base/TemplateElement.js';
-import { API } from '../services/API.js';
-import { Router } from '../services/Router.js';
-import Store from '../services/Store.js';
+import { TemplateElement } from '../../base/TemplateElement.js';
+import { ROUTES } from '../../constants.js';
+import { API } from '../../services/API.js';
 
 /**
  * Account login screen.
@@ -14,7 +13,7 @@ import Store from '../services/Store.js';
  * @tagname login-page
  */
 export class LoginPage extends TemplateElement {
-  static TEMPLATE_PATH = '/scripts/pages/login-page.html';
+  static TEMPLATE_PATH = '/scripts/pages/account/login-page.html';
 
   async render() {
     this.querySelector('form').addEventListener('submit', e => this.#handleSubmit(e));
@@ -46,8 +45,8 @@ export class LoginPage extends TemplateElement {
 
     const response = await API.authenticate(email, password);
     if (response.success) {
-      Store.jwt = response.jwt;
-      Router.go('/account');
+      app.Store.jwt = response.jwt;
+      app.Router.go(ROUTES.ACCOUNT);
     } else {
       app.showErrorModal(response.message, false);
     }
