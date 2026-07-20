@@ -1,4 +1,4 @@
-# run with: ait -c .air.win.toml
+# run with: air -c .air.win.toml
 root = "."
 tmp_dir = "tmp"
 

@@ -1,0 +1,31 @@
+{
+  "css.validate": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports": "explicit",
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.foldingImportsByDefault": false,
+  "eslint.enable": true,
+  "stylelint.configFile": ".stylelintrc.json",
+  "stylelint.reportDescriptionlessDisables": true,
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "go.vetOnSave": "package",
+  "files.exclude": {
+    "tmp/": true,
+    "dist/": true
+  },
+  "search.exclude": {
+    "tmp/": true,
+    "dist/": true
+  },
+  "makefile.configureOnOpen": false
+}

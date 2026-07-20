@@ -30,16 +30,17 @@ export class YouTubeEmbed extends HTMLElement {
       const url = this.dataset.url;
       const videoId = url.split('v=')[1];
 
-      this.innerHTML = `
-        <iframe width="100%" height="300"
-                src="https://www.youtube.com/embed/${videoId}"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-        </iframe>
-      `;
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '300';
+      iframe.src = `https://www.youtube.com/embed/${videoId}`;
+      iframe.title = 'YouTube video player';
+      iframe.frameBorder = '0';
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allowFullscreen = true;
+      this.appendChild(iframe);
     }
   }
 }

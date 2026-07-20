@@ -35,14 +35,23 @@ export class MovieItem extends HTMLElement {
   }
 
   connectedCallback() {
-    this.innerHTML = `
-      <a class="navlink" href="${ROUTES.MOVIES}/${this.#movie.id}">
-        <article>
-          <img src="${this.#movie.poster_url}" alt="${this.#movie.title} Poster" />
-          <p>${this.#movie.title} (${this.#movie.release_year})</p>
-        </article>
-      </a>
-    `;
+    const movieItem = document.createElement('a');
+    movieItem.classList.add('navlink');
+    movieItem.href = `${ROUTES.MOVIES}/${this.#movie.id}`;
+
+    const poster = document.createElement('img');
+    poster.src = `${this.#movie.poster_url}`;
+    poster.alt = `${this.#movie.title} Poster`;
+
+    const description = document.createElement('p');
+    description.textContent = `${this.#movie.title} (${this.#movie.release_year})`;
+
+    const wrapper = document.createElement('article');
+
+    wrapper.appendChild(poster);
+    wrapper.appendChild(description);
+    movieItem.appendChild(wrapper);
+    this.appendChild(movieItem);
   }
 }
 

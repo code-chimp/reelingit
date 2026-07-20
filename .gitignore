@@ -2,8 +2,11 @@
 .DS_Store
 
 # Editors and IDEs
-.idea/
-.vscode/
+.vscode/*
+!.vscode/.gitattributes
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
 *.swp
 *.swo
 

@@ -94,25 +94,49 @@ export class MovieDetailsPage extends TemplateElement {
       this.querySelector('h3').textContent = this.#movie.tagline;
       this.querySelector('img').src = this.#movie.poster_url;
       this.querySelector('#trailer').dataset.url = this.#movie.trailer_url;
-      this.querySelector('#metadata').innerHTML = `
-        <dt>Release Year</dt>
-        <dd>${this.#movie.release_year}</dd>
-        <dt>Score</dt>
-        <dd>${this.#movie.score} / 10</dd>
-        <dt>Popularity</dt>
-        <dd>${this.#movie.popularity}</dd>
-      `;
-      this.querySelector('#genres').innerHTML = this.#movie.genres
-        .map(genre => `<li>${genre.name}</li>`)
-        .join('');
-      this.querySelector('#overview').textContent = this.#movie.overview;
-      this.#movie.casting.forEach(actor => {
+      const metaDataDL = this.querySelector('#metadata');
+
+      const releaseDt = document.createElement('dt');
+      releaseDt.textContent = 'Release Year';
+      const releaseDd = document.createElement('dd');
+      releaseDd.textContent = this.#movie.release_year;
+
+      const scoreDt = document.createElement('dt');
+      scoreDt.textContent = 'Score';
+      const scoreDd = document.createElement('dd');
+      scoreDd.textContent = `${this.#movie.score} / 10`;
+
+      const popularityDt = document.createElement('dt');
+      popularityDt.textContent = 'Popularity';
+      const popularityDd = document.createElement('dd');
+      popularityDd.textContent = `${this.#movie.popularity}`;
+
+      metaDataDL.appendChild(releaseDt);
+      metaDataDL.appendChild(releaseDd);
+      metaDataDL.appendChild(scoreDt);
+      metaDataDL.appendChild(scoreDd);
+      metaDataDL.appendChild(popularityDt);
+      metaDataDL.appendChild(popularityDd);
+
+      const genresUl = this.querySelector('#genres');
+      this.#movie.genres.forEach(genre => {
         const li = document.createElement('li');
-        li.innerHTML = `
-          <img src="${actor.image_url ?? '/images/generic_actor.jpg'}" alt="Picture of ${actor.first_name} ${actor.last_name}">
-          <p>${actor.first_name} ${actor.last_name}</p>
-        `;
-        this.querySelector('#cast').appendChild(li);
+        li.textContent = genre.name;
+        genresUl.appendChild(li);
+      });
+
+      this.querySelector('#overview').textContent = this.#movie.overview;
+      const castUl = this.querySelector('#cast');
+      this.#movie.casting.forEach(actor => {
+        const actorPic = document.createElement('img');
+        actorPic.src = actor.image_url ?? '/images/generic_actor.jpg';
+        actorPic.alt = `Picture of ${actor.first_name} ${actor.last_name}`;
+        const actorName = document.createElement('p');
+        actorName.textContent = `${actor.first_name} ${actor.last_name}`;
+        const li = document.createElement('li');
+        li.appendChild(actorPic);
+        li.appendChild(actorName);
+        castUl.appendChild(li);
       });
 
       this.querySelector('#button-favorites').addEventListener('click', () => {

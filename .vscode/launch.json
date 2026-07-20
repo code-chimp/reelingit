@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Go Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/main.go",
+      // main.go loads .env and serves ./public relative to the process's
+      // working directory, so this must run from the repo root.
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Launch Chrome against localhost:8080",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080",
+      // No bundler, so the served files are the source files directly.
+      "webRoot": "${workspaceFolder}/public"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Full App (Go + Chrome)",
+      "configurations": ["Launch Go Server", "Launch Chrome against localhost:8080"],
+      "stopAll": true
+    }
+  ]
+}

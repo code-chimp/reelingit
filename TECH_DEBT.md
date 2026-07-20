@@ -1,5 +1,100 @@
 # Tech Debt
 
+## Code review findings (July 2026)
+
+Findings from an architecture review of the frontend SPA and its API
+contract, ordered by priority. Items 1–2 should land before the testing
+work below, since they define the seams the tests will mock against.
+
+### 1. XSS: `innerHTML` interpolation of untrusted data
+
+- [ ] Fix the reflected XSS in `public/scripts/pages/MoviesPage.js` — the
+      "no results" message interpolates the URL-supplied search term into
+      `innerHTML` (`Could not find movies with the search term: ...`).
+      Render the term via `textContent` instead
+- [x] Sweep the remaining `innerHTML` writes that interpolate API data and
+      switch data-bearing values to `textContent`/`createElement`:
+      `MovieDetailsPage.js` (metadata `<dl>`, genres list, cast names),
+      `MovieItem.js` (title, poster alt). Pattern: `innerHTML` is fine for
+      static markup skeletons; anything containing data goes in via
+      `textContent` or attribute assignment
+- [ ] Add a Content-Security-Policy header to the Go server (in
+      `cmd/main.go`'s `spaHandler` or a wrapping middleware) as defense in
+      depth
+
+### 2. API error contract is ambiguous
+
+- [ ] Standardize a JSON error envelope on the Go side — auth failures in
+      `internal/handlers/account_handler.go` currently use `http.Error`
+      (plaintext), which the frontend's `response.json()` can't parse
+- [ ] Check `response.ok` in `API.fetch`/`API.post`
+      (`public/scripts/services/API.js`) and throw typed errors instead of
+      swallowing everything into `undefined`, so callers can distinguish
+      "network down" from "401" from "empty list"
+- [ ] Add a 401 handling path: clear the stored JWT and redirect to login.
+      Today `Store.loggedIn` only checks token presence, so an expired JWT
+      leaves the UI "logged in" with no recovery
+- [ ] Remove the dead `try/catch` blocks around `API.getFavorites` /
+      `API.getWatchlist` in `API.js` — `API.fetch` can never reject, so
+      the catch branches are unreachable (they become real again once
+      `API.fetch` throws)
+- [ ] Rework `MovieDetailsPage.render()` error handling — it currently
+      only works by accident (`undefined.title` throws a `TypeError` that
+      gets reinterpreted as "Movie not found"). Handle the not-found case
+      explicitly once `API.fetch` surfaces status codes
+
+### 3. Query strings never encoded
+
+- [ ] Build search/filter URLs with `URLSearchParams` instead of raw
+      template interpolation: `app.search` in `app.js`, and
+      `#handleFilterChange` / `#handleOrderChange` in `MoviesPage.js`.
+      Searching for `AT&T` or `50%` currently breaks
+
+### 4. `window.app` coupling (testability)
+
+- [ ] Invert the dependency direction: modules should import `Store`,
+      `Router`, and the error modal helper directly, leaving `window.app`
+      as a thin adapter that exists only for inline HTML handlers
+      (`onsubmit="app.search(event)"`). Every unit test currently needs a
+      `window.app` fixture
+- [ ] `API.js` reads `app.Store.jwt` without importing `Store` — it works
+      only through temporal coupling with `app.js`. Import `Store`
+      directly
+- [ ] Build the fetch headers object conditionally in `API.js` —
+      `Authorization: null` in an object literal actually sends the header
+      with the string value `"null"`
+
+### 5. Router edge cases
+
+- [ ] `popstate` handler in `services/Router.js` passes only
+      `location.pathname` while `init` passes `pathname + search` — make
+      them consistent (back-button to a search URL currently survives only
+      because `MoviesPage` reads `location.search` itself)
+- [ ] Check `protected` before calling `history.pushState` — the
+      protected URL currently lands in history first, so the back button
+      bounces the user back into the redirect
+- [ ] Move focus to `<main>` (or the new page's `h1`) and update
+      `document.title` on route changes — the two biggest SPA
+      accessibility gaps; screen readers get no signal that the page
+      changed
+
+### 6. Smaller items
+
+- [ ] `YouTubeEmbed.js`: `url.split('v=')[1]` breaks on `youtu.be` links
+      and trailing params (`v=X&t=30`). Use
+      `new URL(url).searchParams.get('v')`
+- [ ] `HomePage.js`: fetch top and random movies with `Promise.all`
+      instead of sequential `await`s
+- [ ] `TemplateElement._loadTemplate`: check `response.ok` — a missing
+      template path gets served `index.html` by the SPA fallback, so
+      `querySelector('template')` returns `null` and fails with a
+      confusing "cannot read content of null"
+- [ ] `MovieDetailsPage.js`: the `this.params[0] ?? 14` fallback throws
+      anyway when `params` is undefined, so it doesn't do what the
+      docstring claims — fix or remove
+- [ ] `Store.js`: `loggedIn` returns `true` for an empty-string JWT
+      (`this.jwt !== null`); use a truthiness check
+
 Testing is not yet in place across the stack. The intention is to close that
 gap with three layers: Go unit tests on the backend, Vitest unit tests on the
 frontend, and Playwright end-to-end tests covering critical user flows.

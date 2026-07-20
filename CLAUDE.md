@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-ReelingIt is a movie browsing app: a Go backend (stdlib `net/http`, PostgreSQL via `lib/pq`) serving a JSON API, paired with a vanilla-JS frontend built on native Web Components (no framework, no bundler). It doubles as the companion repo for the Frontend Masters course "Build a Fullstack App in Vanilla JS & Go" — `README.md` contains the full course script (sections A–K) with copy-paste code snippets for every step. The actual repo is partway through that script; check current source before assuming a section's snippet reflects what's implemented.
+ReelingIt is a movie browsing app: a Go backend (stdlib `net/http`, PostgreSQL via `lib/pq`) serving a JSON API, paired with a vanilla-JS frontend built on native Web Components (no framework, no bundler). It started as the companion project for the Frontend Masters course "Build a Fullstack App in Vanilla JS & Go" (Max Firtman), but this is the owner's own version and deviates from the course code in places — `README.md` describes the differences. Check current source rather than course materials when reasoning about what's implemented.
 
 ## Commands
 

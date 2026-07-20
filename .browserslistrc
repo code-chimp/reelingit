@@ -1,0 +1,11 @@
+[production]
+Chrome >= 120
+Firefox >= 117
+Safari >= 17.2
+iOS >= 17.2
+not dead
+
+[development]
+last 1 Chrome version
+last 1 Firefox version
+last 1 Safari version
