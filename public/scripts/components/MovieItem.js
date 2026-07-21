@@ -27,13 +27,18 @@ export class MovieItem extends HTMLElement {
   #movie;
 
   /**
-   * @param {{ title: string, poster_url: string, release_year: number }} movie - Movie data from the API
+   * @param {{ id: number|string, title: string, poster_url: string, release_year: number }} movie - Movie data from the API
    */
   constructor(movie) {
     super();
     this.#movie = movie;
   }
 
+  /**
+   * Builds and appends the linked poster card after the element is connected.
+   *
+   * @returns {void}
+   */
   connectedCallback() {
     const movieItem = document.createElement('a');
     movieItem.classList.add('navlink');

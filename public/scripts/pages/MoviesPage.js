@@ -1,17 +1,15 @@
 import { TemplateElement } from '../base/TemplateElement.js';
+import { ROUTES } from '../constants.js';
 import { MovieItem } from '../components/MovieItem.js';
 import { API } from '../services/API.js';
-import { ROUTES } from '../constants.js';
+import { showErrorModal } from '../services/ErrorModal.js';
 
 /**
  * Movie search/listing screen. Reads `q`, `order`, and `genre` from the
  * URL's query string, fetches matching movies, and renders them as a list
  * of `MovieItem`s alongside genre-filter and sort-order controls.
  *
- * Also stands in as a placeholder for several not-yet-built account routes
- * (register, login, account, favorites, watchlist) in `routes.js`.
- *
- * @summary Movie search/listing screen (also a placeholder for account routes)
+ * @summary Movie search/listing screen
  * @tag movie-page
  * @tagname movie-page
  */
@@ -21,7 +19,7 @@ export class MoviesPage extends TemplateElement {
   /**
    * Genre list cached across all `MoviesPage` instances, since it rarely
    * changes within a session. Shared via a static (rather than instance)
-   * field because `Router.go()` constructs a new instance on every
+   * field because router navigation constructs a new instance on every
    * navigation to `/movies`.
    *
    * @type {Array<object>}
@@ -48,7 +46,11 @@ export class MoviesPage extends TemplateElement {
     }
 
     const filterSelect = this.querySelector('select#filter');
-    filterSelect.innerHTML = `<option value="">All Genres</option>`;
+    filterSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'All Genres';
+    filterSelect.appendChild(defaultOption);
 
     MoviesPage.#genres.forEach(genre => {
       const option = document.createElement('option');
@@ -86,7 +88,7 @@ export class MoviesPage extends TemplateElement {
     if (this.#query !== '') {
       this.querySelector('h2').textContent = `Search Results for "${this.#query}"`;
     } else {
-      app.showErrorModal('Please enter a search term');
+      showErrorModal('Please enter a search term');
       return;
     }
 
@@ -103,7 +105,11 @@ export class MoviesPage extends TemplateElement {
         moviesList.appendChild(li);
       });
     } else {
-      moviesList.innerHTML = `<li><h3>Could not find movies with the search term: ${this.#query}</h3></li>`;
+      const notFoundError = document.createElement('h3');
+      notFoundError.textContent = `Could not find movies with the search term: ${this.#query}`;
+      const li = document.createElement('li');
+      li.appendChild(notFoundError);
+      moviesList.appendChild(li);
     }
 
     if (this.#genre) {
@@ -131,10 +137,13 @@ export class MoviesPage extends TemplateElement {
    * @returns {void}
    */
   #handleFilterChange(e) {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    const order = params.get('order') ?? '';
-    app.Router.go(`${ROUTES.MOVIES}?q=${q}&genre=${e.target.value}&order=${order}`);
+    const search = new URLSearchParams({
+      q: this.#query,
+      genre: e.target.value,
+      order: this.#order,
+    });
+
+    this.navigate(`${ROUTES.MOVIES}?${search}`);
   }
 
   /**
@@ -146,10 +155,13 @@ export class MoviesPage extends TemplateElement {
    * @returns {void}
    */
   #handleOrderChange(e) {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    const genre = params.get('genre') ?? '';
-    app.Router.go(`${ROUTES.MOVIES}?q=${q}&genre=${genre}&order=${e.target.value}`);
+    const search = new URLSearchParams({
+      q: this.#query,
+      genre: this.#genre,
+      order: e.target.value,
+    });
+
+    this.navigate(`${ROUTES.MOVIES}?${search}`);
   }
 }
 

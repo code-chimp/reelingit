@@ -14,7 +14,8 @@ type Logger struct {
 	file        *os.File
 }
 
-// NewLogger creates a new logger with output to both file and stdout
+// NewLogger creates a Logger whose Info output goes to stdout and whose Error
+// output is appended to logFilePath.
 func NewLogger(logFilePath string) (*Logger, error) {
 	file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -28,17 +29,17 @@ func NewLogger(logFilePath string) (*Logger, error) {
 	}, nil
 }
 
-// Info logs informational messages to stdout
+// Info logs an informational message to stdout.
 func (l *Logger) Info(msg string) {
 	l.infoLogger.Printf("%s", msg)
 }
 
-// Error logs error messages to file
+// Error logs a message and its associated error to the log file.
 func (l *Logger) Error(msg string, err error) {
 	l.errorLogger.Printf("%s: %v", msg, err)
 }
 
-// Close closes the log file
+// Close closes the log file used for error output.
 func (l *Logger) Close() {
 	l.file.Close()
 }

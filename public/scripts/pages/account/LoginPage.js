@@ -1,6 +1,8 @@
 import { TemplateElement } from '../../base/TemplateElement.js';
 import { ROUTES } from '../../constants.js';
 import { API } from '../../services/API.js';
+import { showErrorModal } from '../../services/ErrorModal.js';
+import Store from '../../services/Store.js';
 
 /**
  * Account login screen.
@@ -15,6 +17,11 @@ import { API } from '../../services/API.js';
 export class LoginPage extends TemplateElement {
   static TEMPLATE_PATH = '/scripts/pages/account/login-page.html';
 
+  /**
+   * Wires the login form after the template is loaded.
+   *
+   * @returns {Promise<void>}
+   */
   async render() {
     this.querySelector('form').addEventListener('submit', e => this.#handleSubmit(e));
   }
@@ -39,16 +46,16 @@ export class LoginPage extends TemplateElement {
     if (password.length < 8) errors.push('Password must be at least 8 characters long');
 
     if (errors.length > 0) {
-      app.showErrorModal(errors.join('\n'), false);
+      showErrorModal(errors.join('\n'), false);
       return;
     }
 
     const response = await API.authenticate(email, password);
     if (response.success) {
-      app.Store.jwt = response.jwt;
-      app.Router.go(ROUTES.ACCOUNT);
+      Store.jwt = response.jwt;
+      this.navigate(ROUTES.ACCOUNT);
     } else {
-      app.showErrorModal(response.message, false);
+      showErrorModal(response.message, false);
     }
   }
 }

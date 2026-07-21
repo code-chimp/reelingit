@@ -2,7 +2,7 @@
  * Embeds a responsive YouTube video player from a standard watch URL.
  *
  * When `data-url` is set to a non-empty YouTube watch URL, the element
- * replaces its contents with an iframe pointed at the corresponding embed URL.
+ * appends an iframe pointed at the corresponding embed URL.
  *
  * Use it like this:
  * ```html
@@ -21,10 +21,23 @@
  * @attr {string} data-url - Full YouTube watch URL containing a `v=` video ID query parameter
  */
 export class YouTubeEmbed extends HTMLElement {
+  /**
+   * Attributes that trigger the iframe to be created or updated.
+   *
+   * @returns {string[]} Observed attribute names.
+   */
   static get observedAttributes() {
     return ['data-url'];
   }
 
+  /**
+   * Appends an iframe when a non-empty YouTube watch URL is assigned.
+   *
+   * @param {string} name - Changed attribute name.
+   * @param {string|null} oldValue - Attribute value before the change.
+   * @param {string|null} newValue - Attribute value after the change.
+   * @returns {void}
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data-url' && newValue.trim().length > 0) {
       const url = this.dataset.url;

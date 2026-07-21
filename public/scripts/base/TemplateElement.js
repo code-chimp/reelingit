@@ -1,3 +1,5 @@
+import { CUSTOM_EVENTS } from '../constants.js';
+
 /**
  * Base class for web components that load HTML templates from external files.
  *
@@ -85,6 +87,25 @@ export class TemplateElement extends HTMLElement {
   }
 
   /**
+   * Requests a client-side navigation without importing the router.
+   *
+   * The router listens for this document-level event and owns the actual
+   * history update and page transition.
+   *
+   * @param {string} route - Application route, optionally including a query string.
+   * @returns {void}
+   */
+  navigate(route) {
+    document.dispatchEvent(
+      new CustomEvent(CUSTOM_EVENTS.NAVIGATE, {
+        detail: {
+          route,
+        },
+      }),
+    );
+  }
+
+  /**
    * Invoked when the element is inserted into the DOM.
    *
    * Automatically triggers template loading and initialization. If a subclass
@@ -132,7 +153,9 @@ export class TemplateElement extends HTMLElement {
    * @returns {Promise<void>}
    * @example
    * async handleError(e) {
-   *   this.innerHTML = '<p>Failed to load component</p>';
+   *   const message = document.createElement('p');
+   *   message.textContent = 'Failed to load component';
+   *   this.replaceChildren(message);
    * }
    */
   async handleError(e) {

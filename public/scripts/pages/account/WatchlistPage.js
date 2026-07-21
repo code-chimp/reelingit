@@ -12,6 +12,7 @@ import { CollectionPage } from './CollectionPage.js';
  * @tagname watchlist-page
  */
 export class WatchlistPage extends CollectionPage {
+  /** Creates a watchlist collection page backed by the watchlist endpoint. */
   constructor() {
     super(API.getWatchlist, 'Movies in Watchlist');
   }

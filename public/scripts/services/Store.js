@@ -23,7 +23,7 @@ const Store = {
   /** @type {string|null} Current session JWT, or `null` if logged out. */
   jwt: null,
 
-  /** @returns {boolean} Whether a JWT is present, i.e. the user is logged in. */
+  /** @returns {boolean} Whether the stored JWT value is not `null`. */
   get loggedIn() {
     return this.jwt !== null;
   },

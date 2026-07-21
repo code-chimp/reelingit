@@ -1,5 +1,6 @@
 import { TemplateElement } from '../../base/TemplateElement.js';
 import { MovieItem } from '../../components/MovieItem.js';
+import { ROUTES } from '../../constants.js';
 
 /**
  * Generic screen for listing a named collection of movies (e.g. favorites
@@ -46,7 +47,12 @@ export class CollectionPage extends TemplateElement {
    * @returns {Promise<void>}
    */
   async render() {
-    const movies = await this.#endpoint();
+    let movies = [];
+    try {
+      movies = await this.#endpoint();
+    } catch {
+      this.navigate(ROUTES.ACCOUNT);
+    }
     const pageTitle = this.querySelector('h2');
     pageTitle.textContent = this.#title;
     const movieList = this.querySelector('ul#movies-result');
@@ -59,7 +65,11 @@ export class CollectionPage extends TemplateElement {
         movieList.appendChild(movieItem);
       });
     } else {
-      movieList.innerHTML = '<li><h3>No movies in collection</h3></li>';
+      const emptyMessage = document.createElement('h3');
+      emptyMessage.textContent = 'No movies in collection';
+      const movieItem = document.createElement('li');
+      movieItem.appendChild(emptyMessage);
+      movieList.appendChild(movieItem);
     }
   }
 }

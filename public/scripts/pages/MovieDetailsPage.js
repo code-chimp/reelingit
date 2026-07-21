@@ -2,6 +2,8 @@ import { COLLECTIONS, ROUTES } from '../constants.js';
 import { TemplateElement } from '../base/TemplateElement.js';
 import '../components/YouTubeEmbed.js';
 import { API } from '../services/API.js';
+import { showErrorModal } from '../services/ErrorModal.js';
+import Store from '../services/Store.js';
 
 /**
  * Movie detail screen showing poster, trailer, metadata, genres, overview,
@@ -9,9 +11,7 @@ import { API } from '../services/API.js';
  *
  * The movie is identified by `params`, which `Router` sets on the element
  * instance (from the `/movies/(\d+)` route's capture group) before it is
- * connected to the DOM. `params[0]` is the movie ID as a string; it falls
- * back to `14` when the element is created without a route match, e.g. in a
- * standalone test harness.
+ * connected to the DOM. `params[0]` is the movie ID as a string.
  *
  * Also wires up the "Add to Favorites"/"Add to Watchlist" buttons to save
  * the movie to the corresponding `COLLECTIONS` entry for the current user,
@@ -46,25 +46,25 @@ export class MovieDetailsPage extends TemplateElement {
    * @returns {Promise<void>}
    */
   async #saveToCollection(movie_id, collection) {
-    if (app.Store.loggedIn) {
+    if (Store.loggedIn) {
       try {
         const response = await API.saveToCollection(movie_id, collection);
         if (response.success) {
           switch (collection) {
             case COLLECTIONS.FAVORITE:
-              app.Router.go(ROUTES.ACCOUNT_FAVORITES);
+              this.navigate(ROUTES.ACCOUNT_FAVORITES);
               break;
             case COLLECTIONS.WATCHLIST:
-              app.Router.go(ROUTES.ACCOUNT_WATCHLIST);
+              this.navigate(ROUTES.ACCOUNT_WATCHLIST);
           }
         } else {
-          app.showErrorModal("We couldn't save the movie.");
+          showErrorModal("We couldn't save the movie.");
         }
       } catch (e) {
         console.log(e);
       }
     } else {
-      app.Router.go(ROUTES.ACCOUNT);
+      this.navigate(ROUTES.ACCOUNT);
     }
   }
 
@@ -94,6 +94,8 @@ export class MovieDetailsPage extends TemplateElement {
       this.querySelector('h3').textContent = this.#movie.tagline;
       this.querySelector('img').src = this.#movie.poster_url;
       this.querySelector('#trailer').dataset.url = this.#movie.trailer_url;
+
+      // metadata definition list
       const metaDataDL = this.querySelector('#metadata');
 
       const releaseDt = document.createElement('dt');
@@ -118,6 +120,7 @@ export class MovieDetailsPage extends TemplateElement {
       metaDataDL.appendChild(popularityDt);
       metaDataDL.appendChild(popularityDd);
 
+      // genres
       const genresUl = this.querySelector('#genres');
       this.#movie.genres.forEach(genre => {
         const li = document.createElement('li');
@@ -131,8 +134,10 @@ export class MovieDetailsPage extends TemplateElement {
         const actorPic = document.createElement('img');
         actorPic.src = actor.image_url ?? '/images/generic_actor.jpg';
         actorPic.alt = `Picture of ${actor.first_name} ${actor.last_name}`;
+
         const actorName = document.createElement('p');
         actorName.textContent = `${actor.first_name} ${actor.last_name}`;
+
         const li = document.createElement('li');
         li.appendChild(actorPic);
         li.appendChild(actorName);
@@ -148,7 +153,7 @@ export class MovieDetailsPage extends TemplateElement {
       });
     } catch (error) {
       console.error('Failed to fetch movie details:', error);
-      app.showErrorModal('Movie not found');
+      showErrorModal('Movie not found');
     }
   }
 }

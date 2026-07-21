@@ -24,6 +24,13 @@ import { MovieItem } from '../components/MovieItem.js';
 export class HomePage extends TemplateElement {
   static TEMPLATE_PATH = '/scripts/pages/home-page.html';
 
+  /**
+   * Replaces a movie list's contents with linked movie cards.
+   *
+   * @param {Array<object>} movies - Movies to render.
+   * @param {HTMLUListElement} ul - List element receiving the cards.
+   * @returns {void}
+   */
   #renderMoviesToList(movies, ul) {
     ul.innerHTML = '';
     movies.forEach(movie => {
@@ -33,6 +40,11 @@ export class HomePage extends TemplateElement {
     });
   }
 
+  /**
+   * Fetches and renders the top and random movie sections.
+   *
+   * @returns {Promise<void>}
+   */
   async render() {
     try {
       const topMovies = await API.getTopMovies();

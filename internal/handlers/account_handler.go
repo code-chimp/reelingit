@@ -48,8 +48,8 @@ type AccountHandler struct {
 	logger  *logger.Logger
 }
 
-// NewAccountHandler creates an AccountHandler backed by storage, logging
-// failures to log.
+// NewAccountHandler creates an AccountHandler backed by storage and using log
+// to record handler failures.
 func NewAccountHandler(storage data.AccountStorage, log *logger.Logger) *AccountHandler {
 	return &AccountHandler{
 		storage: storage,
@@ -60,8 +60,8 @@ func NewAccountHandler(storage data.AccountStorage, log *logger.Logger) *Account
 // AuthMiddleware wraps next, requiring a valid HMAC-signed JWT in the
 // Authorization header ("Bearer <token>" or the bare token). On success, it
 // injects the token's email claim into the request context (retrievable via
-// emailContextKey) and calls next. On failure, it writes a 401 and does not
-// call next.
+// emailContextKey) and calls next. On failure, it writes a plaintext 401
+// response and does not call next.
 func (h *AccountHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := r.Header.Get("Authorization")

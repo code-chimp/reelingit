@@ -8,7 +8,7 @@ work below, since they define the seams the tests will mock against.
 
 ### 1. XSS: `innerHTML` interpolation of untrusted data
 
-- [ ] Fix the reflected XSS in `public/scripts/pages/MoviesPage.js` — the
+- [x] Fix the reflected XSS in `public/scripts/pages/MoviesPage.js` — the
       "no results" message interpolates the URL-supplied search term into
       `innerHTML` (`Could not find movies with the search term: ...`).
       Render the term via `textContent` instead
@@ -18,7 +18,7 @@ work below, since they define the seams the tests will mock against.
       `MovieItem.js` (title, poster alt). Pattern: `innerHTML` is fine for
       static markup skeletons; anything containing data goes in via
       `textContent` or attribute assignment
-- [ ] Add a Content-Security-Policy header to the Go server (in
+- [x] Add a Content-Security-Policy header to the Go server (in
       `cmd/main.go`'s `spaHandler` or a wrapping middleware) as defense in
       depth
 
@@ -34,10 +34,9 @@ work below, since they define the seams the tests will mock against.
 - [ ] Add a 401 handling path: clear the stored JWT and redirect to login.
       Today `Store.loggedIn` only checks token presence, so an expired JWT
       leaves the UI "logged in" with no recovery
-- [ ] Remove the dead `try/catch` blocks around `API.getFavorites` /
-      `API.getWatchlist` in `API.js` — `API.fetch` can never reject, so
-      the catch branches are unreachable (they become real again once
-      `API.fetch` throws)
+- [x] Remove the obsolete `try/catch` blocks around `API.getFavorites` /
+      `API.getWatchlist` in `API.js` — `API.fetch` now rethrows failures,
+      allowing the calling pages to decide how to recover
 - [ ] Rework `MovieDetailsPage.render()` error handling — it currently
       only works by accident (`undefined.title` throws a `TypeError` that
       gets reinterpreted as "Movie not found"). Handle the not-found case
@@ -52,12 +51,11 @@ work below, since they define the seams the tests will mock against.
 
 ### 4. `window.app` coupling (testability)
 
-- [ ] Invert the dependency direction: modules should import `Store`,
-      `Router`, and the error modal helper directly, leaving `window.app`
-      as a thin adapter that exists only for inline HTML handlers
-      (`onsubmit="app.search(event)"`). Every unit test currently needs a
-      `window.app` fixture
-- [ ] `API.js` reads `app.Store.jwt` without importing `Store` — it works
+- [x] Invert the dependency direction: modules import `Store` and the error
+      modal helper directly, and request navigation through document events
+      rather than importing the router back through the route table. The
+      runtime no longer depends on a `window.app` fixture
+- [x] `API.js` reads `app.Store.jwt` without importing `Store` — it works
       only through temporal coupling with `app.js`. Import `Store`
       directly
 - [ ] Build the fetch headers object conditionally in `API.js` —
@@ -89,7 +87,7 @@ work below, since they define the seams the tests will mock against.
       template path gets served `index.html` by the SPA fallback, so
       `querySelector('template')` returns `null` and fails with a
       confusing "cannot read content of null"
-- [ ] `MovieDetailsPage.js`: the `this.params[0] ?? 14` fallback throws
+- [x] `MovieDetailsPage.js`: the `this.params[0] ?? 14` fallback throws
       anyway when `params` is undefined, so it doesn't do what the
       docstring claims — fix or remove
 - [ ] `Store.js`: `loggedIn` returns `true` for an empty-string JWT

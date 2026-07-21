@@ -20,10 +20,16 @@
  * @attr {string} data-height - CSS height for each placeholder bar (default: 10px)
  */
 export class AnimatedLoading extends HTMLElement {
+  /** Creates an empty loading-placeholder element. */
   constructor() {
     super();
   }
 
+  /**
+   * Appends the configured number of animated placeholder bars.
+   *
+   * @returns {void}
+   */
   connectedCallback() {
     let qty = this.dataset.elements ?? 1;
     let width = this.dataset.width ?? '100px';

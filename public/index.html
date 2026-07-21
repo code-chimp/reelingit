@@ -29,7 +29,7 @@
         </ul>
       </nav>
       <div>
-        <form onsubmit="app.search(event)">
+        <form id="search-form">
           <label for="site-search" class="sr-only">Search</label>
           <input type="search" id="site-search" placeholder="Search movies" />
         </form>
@@ -43,7 +43,7 @@
     <dialog id="alert-modal">
       <h3>Error</h3>
       <p>Sorry, something went wrong</p>
-      <button onclick="app.closeErrorModal()">Ok</button>
+      <button id="close-alert">Ok</button>
     </dialog>
   </body>
 </html>

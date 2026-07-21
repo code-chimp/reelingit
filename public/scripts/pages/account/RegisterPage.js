@@ -1,6 +1,8 @@
 import { TemplateElement } from '../../base/TemplateElement.js';
 import { ROUTES } from '../../constants.js';
 import { API } from '../../services/API.js';
+import { showErrorModal } from '../../services/ErrorModal.js';
+import Store from '../../services/Store.js';
 
 /**
  * Account registration screen.
@@ -15,6 +17,11 @@ import { API } from '../../services/API.js';
 export class RegisterPage extends TemplateElement {
   static TEMPLATE_PATH = '/scripts/pages/account/register-page.html';
 
+  /**
+   * Wires the registration form after the template is loaded.
+   *
+   * @returns {Promise<void>}
+   */
   async render() {
     this.querySelector('form').addEventListener('submit', e => this.#handleSubmit(e));
   }
@@ -43,16 +50,16 @@ export class RegisterPage extends TemplateElement {
     if (password !== passwordConfirm) errors.push('Passwords do not match');
 
     if (errors.length > 0) {
-      app.showErrorModal(errors.join('\n'), false);
+      showErrorModal(errors.join('\n'), false);
       return;
     }
 
     const response = await API.register(name, email, password);
     if (response.success) {
-      app.Store.jwt = response.jwt;
-      app.Router.go(ROUTES.ACCOUNT);
+      Store.jwt = response.jwt;
+      super.navigate(ROUTES.ACCOUNT);
     } else {
-      app.showErrorModal(response.message, false);
+      showErrorModal(response.message, false);
     }
   }
 }

@@ -1,5 +1,6 @@
 import { routes } from './routes.js';
-import { ROUTES } from '../constants.js';
+import { CUSTOM_EVENTS, ROUTES } from '../constants.js';
+import Store from './Store.js';
 
 /**
  * Client-side router that swaps the contents of `<main>` based on the URL,
@@ -28,10 +29,9 @@ import { ROUTES } from '../constants.js';
  */
 export const Router = {
   /**
-   * Wires up browser back/forward navigation, delegates clicks on
-   * `a.navlink` anchors to client-side navigation (instead of a full page
-   * load), and renders the screen for the current URL. Call once on app
-   * startup.
+   * Wires browser history, delegated nav-link clicks, and document-level
+   * navigation requests, then renders the screen for the current URL. Call
+   * once on app startup.
    *
    * @returns {void}
    */
@@ -48,6 +48,10 @@ export const Router = {
       Router.go(anchor.getAttribute('href'));
     });
 
+    document.addEventListener(CUSTOM_EVENTS.NAVIGATE, e => {
+      Router.go(e.detail.route);
+    });
+
     // go to the initial route
     Router.go(location.pathname + location.search);
   },
@@ -58,7 +62,7 @@ export const Router = {
    * view transition (`document.startViewTransition`) when the browser
    * supports it. Falls back to a "Page not found" heading when no route
    * matches. If the matched route is `protected` and the user isn't logged
-   * in (per `app.Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN`
+   * in (per `Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN`
    * instead of mounting anything.
    *
    * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`)
@@ -91,8 +95,8 @@ export const Router = {
       }
     }
 
-    if (protectedRoute && !app.Store.loggedIn) {
-      app.Router.go(ROUTES.ACCOUNT_LOGIN);
+    if (protectedRoute && !Store.loggedIn) {
+      Router.go(ROUTES.ACCOUNT_LOGIN);
       return;
     }
 

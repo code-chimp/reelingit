@@ -13,6 +13,7 @@ import (
 	"code-chimp.com/reelingit/internal/data"
 	"code-chimp.com/reelingit/internal/handlers"
 	"code-chimp.com/reelingit/internal/logger"
+	"code-chimp.com/reelingit/internal/middleware"
 	"github.com/joho/godotenv"
 
 	_ "github.com/lib/pq"
@@ -45,6 +46,8 @@ func spaHandler(root string) http.HandlerFunc {
 	}
 }
 
+// envOrDefault returns the value of key, or defaultValue when key is unset
+// or set to an empty string.
 func envOrDefault(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -109,9 +112,12 @@ func main() {
 		accountHandler.AuthMiddleware(http.HandlerFunc(accountHandler.SaveToCollection)))
 	mux.Handle("/", spaHandler("public"))
 
+	// Wrap the completed route table so every response receives the CSP header.
+	handler := middleware.ContentSecurityPolicy(mux)
+
 	// Start server
 	logInstance.Info("Server starting on " + addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := http.ListenAndServe(addr, handler); err != nil {
 		logInstance.Error("Server failed to start", err)
 		log.Fatalf("Server failed: %v", err)
 	}

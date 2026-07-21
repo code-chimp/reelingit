@@ -12,6 +12,7 @@ import { CollectionPage } from './CollectionPage.js';
  * @tagname favorites-page
  */
 export class FavoritesPage extends CollectionPage {
+  /** Creates a favorites collection page backed by the favorites endpoint. */
   constructor() {
     super(API.getFavorites, 'Favorite Movies');
   }

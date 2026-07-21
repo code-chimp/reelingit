@@ -7,6 +7,16 @@
  */
 
 /**
+ * Names for document-level events used to communicate across UI layers
+ * without introducing module-import cycles.
+ *
+ * @type {{NAVIGATE: string}}
+ */
+export const CUSTOM_EVENTS = {
+  NAVIGATE: 'app:navigate',
+};
+
+/**
  * Route paths used both to declare `routes.js`'s route table and to
  * navigate to those routes elsewhere (`Router.go(...)`, `<a href>`
  * construction). Keeping both sides in sync via these constants means a
