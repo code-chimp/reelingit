@@ -46,7 +46,7 @@ work below, since they define the seams the tests will mock against.
 
 ### 3. Query strings never encoded
 
-- [ ] Build search/filter URLs with `URLSearchParams` instead of raw
+- [x] Build search/filter URLs with `URLSearchParams` instead of raw
       template interpolation: `app.search` in `app.js`, and
       `#handleFilterChange` / `#handleOrderChange` in `MoviesPage.js`.
       Searching for `AT&T` or `50%` currently breaks
@@ -80,10 +80,10 @@ work below, since they define the seams the tests will mock against.
 
 ### 6. Smaller items
 
-- [ ] `YouTubeEmbed.js`: `url.split('v=')[1]` breaks on `youtu.be` links
+- [x] `YouTubeEmbed.js`: `url.split('v=')[1]` breaks on `youtu.be` links
       and trailing params (`v=X&t=30`). Use
       `new URL(url).searchParams.get('v')`
-- [ ] `HomePage.js`: fetch top and random movies with `Promise.all`
+- [x] `HomePage.js`: fetch top and random movies with `Promise.all`
       instead of sequential `await`s
 - [ ] `TemplateElement._loadTemplate`: check `response.ok` — a missing
       template path gets served `index.html` by the SPA fallback, so
@@ -92,7 +92,7 @@ work below, since they define the seams the tests will mock against.
 - [x] `MovieDetailsPage.js`: the `this.params[0] ?? 14` fallback throws
       anyway when `params` is undefined, so it doesn't do what the
       docstring claims — fix or remove
-- [ ] `Store.js`: `loggedIn` returns `true` for an empty-string JWT
+- [x] `Store.js`: `loggedIn` returns `true` for an empty-string JWT
       (`this.jwt !== null`); use a truthiness check
 
 Testing is not yet in place across the stack. The intention is to close that

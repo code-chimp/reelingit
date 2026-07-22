@@ -21,7 +21,10 @@ window.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const q = document.querySelector('input[type=search]').value;
-    Router.go(`${ROUTES.MOVIES}?q=${q}`);
+    const search = new URLSearchParams({
+      q,
+    });
+    Router.go(`${ROUTES.MOVIES}?q=${search}`);
   });
 
   document.querySelector('#close-alert').addEventListener('click', () => {

@@ -47,10 +47,11 @@ export class HomePage extends TemplateElement {
    */
   async render() {
     try {
-      const topMovies = await API.getTopMovies();
-      this.#renderMoviesToList(topMovies, this.querySelector('#top-10 ul'));
+      const getTopMovies = API.getTopMovies();
+      const getRandomMovies = API.getRandomMovies();
+      const [topMovies, randomMovies] = await Promise.all([getTopMovies, getRandomMovies]);
 
-      const randomMovies = await API.getRandomMovies();
+      this.#renderMoviesToList(topMovies, this.querySelector('#top-10 ul'));
       this.#renderMoviesToList(randomMovies, this.querySelector('#random ul'));
     } catch (error) {
       console.error('Error rendering movies:', error);

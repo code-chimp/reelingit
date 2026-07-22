@@ -76,7 +76,7 @@ export class MovieDetailsPage extends TemplateElement {
    * @returns {void}
    */
   connectedCallback() {
-    this.#movie = { id: this.params[0] ?? 14 };
+    this.#movie = { id: this.params[0] };
     super.connectedCallback();
   }
 

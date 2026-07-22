@@ -25,7 +25,7 @@ const Store = {
 
   /** @returns {boolean} Whether the stored JWT value is not `null`. */
   get loggedIn() {
-    return this.jwt !== null;
+    return !!this.jwt;
   },
 };
 
