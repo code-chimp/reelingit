@@ -1,4 +1,5 @@
 import Store from './Store.js';
+import { CUSTOM_EVENTS, HTTP_CODE, ROUTES } from '../constants.js';
 
 /**
  * Client for the ReelingIt backend's `/api/` movie endpoints.
@@ -16,16 +17,47 @@ export const API = {
   baseURL: '/api/',
 
   /**
-   * Fetches JSON from a path under `baseURL`, optionally appending `args` as
-   * a query string.
+   * Shared response handler for `fetch` and `post`.
    *
-   * Network and response-parsing failures are logged and rethrown so the
-   * caller can choose the appropriate UI recovery behavior.
+   * On a 401, clears the stored JWT and fires a navigation event to the login
+   * screen before throwing, so the caller's catch block still receives the
+   * error. On any other non-ok status, extracts the server's `error` field
+   * from the JSON body (falling back to a generic message) and throws. On
+   * success, returns the parsed JSON body.
+   *
+   * @param {Response} response - The raw `fetch` response to inspect.
+   * @returns {Promise<any>} Parsed JSON body of a successful response.
+   * @throws {Error} For any non-2xx response, with the server's error message
+   *   if available.
+   */
+  _handleResponse: async response => {
+    if (response.status === HTTP_CODE.UNAUTHORIZED) {
+      Store.jwt = null;
+      document.dispatchEvent(
+        new CustomEvent(CUSTOM_EVENTS.NAVIGATE, {
+          detail: {
+            route: ROUTES.ACCOUNT_LOGIN,
+          },
+        }),
+      );
+    }
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.error ?? 'Request failed');
+    }
+
+    return await response.json();
+  },
+
+  /**
+   * Fetches JSON from a path under `baseURL`, optionally appending `args` as
+   * a query string. Non-ok responses and 401s are handled by `_handleResponse`.
    *
    * @param {string} service - Path under `baseURL`, e.g. `movies/top`
    * @param {Record<string, string>} [args] - Query params to append
    * @returns {Promise<any>} Parsed JSON response.
-   * @throws {Error} When the request fails or the response cannot be parsed as JSON.
+   * @throws {Error} On network failure, non-ok response, or JSON parse error.
    */
   fetch: async (service, args) => {
     const queryString = args ? new URLSearchParams(args).toString() : '';
@@ -33,13 +65,15 @@ export const API = {
       const response = await fetch(
         `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`,
         {
-          headers: {
-            Authorization: Store.jwt ? `Bearer ${Store.jwt}` : null,
-          },
+          headers: Store.jwt
+            ? {
+                Authorization: `Bearer ${Store.jwt}`,
+              }
+            : {},
         },
       );
 
-      return await response.json();
+      return await API._handleResponse(response);
     } catch (e) {
       console.error(e);
       throw e;
@@ -47,15 +81,13 @@ export const API = {
   },
 
   /**
-   * POSTs `args` as a JSON body to a path under `baseURL`.
-   *
-   * Network and response-parsing failures are logged and rethrown so the
-   * calling form or page can present an appropriate error state.
+   * POSTs `args` as a JSON body to a path under `baseURL`. Non-ok responses
+   * and 401s are handled by `_handleResponse`.
    *
    * @param {string} service - Path under `baseURL`, e.g. `account/register`
    * @param {Record<string, unknown>} args - Request body, serialized as JSON
    * @returns {Promise<any>} Parsed JSON response.
-   * @throws {Error} When the request fails or the response cannot be parsed as JSON.
+   * @throws {Error} On network failure, non-ok response, or JSON parse error.
    */
   post: async (service, args) => {
     try {
@@ -63,11 +95,12 @@ export const API = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: Store.jwt ? `Bearer ${Store.jwt}` : null,
+          ...(Store.jwt ? { Authorization: `Bearer ${Store.jwt}` } : {}),
         },
         body: JSON.stringify(args),
       });
-      return await response.json();
+
+      return await API._handleResponse(response);
     } catch (e) {
       console.error(e);
       throw e;

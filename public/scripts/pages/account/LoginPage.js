@@ -50,12 +50,12 @@ export class LoginPage extends TemplateElement {
       return;
     }
 
-    const response = await API.authenticate(email, password);
-    if (response.success) {
+    try {
+      const response = await API.authenticate(email, password);
       Store.jwt = response.jwt;
       this.navigate(ROUTES.ACCOUNT);
-    } else {
-      showErrorModal(response.message, false);
+    } catch (e) {
+      showErrorModal(e.message, false);
     }
   }
 }

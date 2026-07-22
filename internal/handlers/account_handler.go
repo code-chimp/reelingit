@@ -60,13 +60,13 @@ func NewAccountHandler(storage data.AccountStorage, log *logger.Logger) *Account
 // AuthMiddleware wraps next, requiring a valid HMAC-signed JWT in the
 // Authorization header ("Bearer <token>" or the bare token). On success, it
 // injects the token's email claim into the request context (retrievable via
-// emailContextKey) and calls next. On failure, it writes a plaintext 401
-// response and does not call next.
+// emailContextKey) and calls next. On failure, it writes a JSON 401
+// error response and does not call next.
 func (h *AccountHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := r.Header.Get("Authorization")
 		if tokenStr == "" {
-			http.Error(w, "Missing authorization token", http.StatusUnauthorized)
+			writeJSONError(w, "Missing authorization token", http.StatusUnauthorized)
 			return
 		}
 
@@ -85,21 +85,21 @@ func (h *AccountHandler) AuthMiddleware(next http.Handler) http.Handler {
 			},
 		)
 		if err != nil || !tokenIn.Valid {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			writeJSONError(w, "Invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// Extract claims from the token
 		claims, ok := tokenIn.Claims.(jwt.MapClaims)
 		if !ok {
-			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+			writeJSONError(w, "Invalid token claims", http.StatusUnauthorized)
 			return
 		}
 
 		// Get the email from claims
 		email, ok := claims["email"].(string)
 		if !ok {
-			http.Error(w, "Email not found in token", http.StatusUnauthorized)
+			writeJSONError(w, "Email not found in token", http.StatusUnauthorized)
 			return
 		}
 
@@ -120,7 +120,7 @@ func (h *AccountHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.logger.Error("Failed to decode registration request", err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -137,7 +137,7 @@ func (h *AccountHandler) Register(w http.ResponseWriter, r *http.Request) {
 		JWT:     token.CreateJWT(models.User{Email: req.Email, Name: req.Name}, *h.logger),
 	}
 
-	if err := h.writeJSONResponse(w, response); err == nil {
+	if err := writeJSONResponse(w, response); err == nil {
 		h.logger.Info("Successfully registered user with email: " + req.Email)
 	}
 }
@@ -151,7 +151,7 @@ func (h *AccountHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.logger.Error("Failed to decode authentication request", err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -164,11 +164,11 @@ func (h *AccountHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Return success response
 	response := AuthResponse{
 		Success: success,
-		Message: "User registered successfully",
+		Message: "User authenticated successfully",
 		JWT:     token.CreateJWT(models.User{Email: req.Email}, *h.logger),
 	}
 
-	if err := h.writeJSONResponse(w, response); err == nil {
+	if err := writeJSONResponse(w, response); err == nil {
 		h.logger.Info("Successfully authenticated user with email: " + req.Email)
 	}
 }
@@ -189,13 +189,13 @@ func (h *AccountHandler) SaveToCollection(w http.ResponseWriter, r *http.Request
 	var req CollectionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.logger.Error("Failed to decode collection request", err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	email, ok := r.Context().Value(emailContextKey).(string)
 	if !ok {
-		http.Error(w, "Unable to retrieve email", http.StatusInternalServerError)
+		writeJSONError(w, "Unable to retrieve email", http.StatusInternalServerError)
 		return
 	}
 
@@ -210,7 +210,7 @@ func (h *AccountHandler) SaveToCollection(w http.ResponseWriter, r *http.Request
 		Message: "Movie added to " + req.Collection + " successfully",
 	}
 
-	if err := h.writeJSONResponse(w, response); err == nil {
+	if err := writeJSONResponse(w, response); err == nil {
 		h.logger.Info("Successfully saved movie to " + req.Collection)
 	}
 }
@@ -221,15 +221,15 @@ func (h *AccountHandler) SaveToCollection(w http.ResponseWriter, r *http.Request
 func (h *AccountHandler) GetFavorites(w http.ResponseWriter, r *http.Request) {
 	email, ok := r.Context().Value(emailContextKey).(string)
 	if !ok {
-		http.Error(w, "Unable to retrieve email", http.StatusInternalServerError)
+		writeJSONError(w, "Unable to retrieve email", http.StatusInternalServerError)
 		return
 	}
 	details, err := h.storage.GetAccountDetails(email)
 	if err != nil {
-		http.Error(w, "Unable to retrieve collections", http.StatusInternalServerError)
+		writeJSONError(w, "Unable to retrieve collections", http.StatusInternalServerError)
 		return
 	}
-	if err := h.writeJSONResponse(w, details.Favorites); err == nil {
+	if err := writeJSONResponse(w, details.Favorites); err == nil {
 		h.logger.Info("Successfully sent favorites")
 	}
 }
@@ -240,52 +240,38 @@ func (h *AccountHandler) GetFavorites(w http.ResponseWriter, r *http.Request) {
 func (h *AccountHandler) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 	email, ok := r.Context().Value(emailContextKey).(string)
 	if !ok {
-		http.Error(w, "Unable to retrieve email", http.StatusInternalServerError)
+		writeJSONError(w, "Unable to retrieve email", http.StatusInternalServerError)
 		return
 	}
 	details, err := h.storage.GetAccountDetails(email)
 	if err != nil {
-		http.Error(w, "Unable to retrieve collections", http.StatusInternalServerError)
+		writeJSONError(w, "Unable to retrieve collections", http.StatusInternalServerError)
 		return
 	}
-	if err := h.writeJSONResponse(w, details.Watchlist); err == nil {
+	if err := writeJSONResponse(w, details.Watchlist); err == nil {
 		h.logger.Info("Successfully sent favorites")
 	}
 }
 
-// writeJSONResponse encodes data as JSON to w. If encoding fails, it logs
-// the failure and writes a 500 response.
-func (h *AccountHandler) writeJSONResponse(w http.ResponseWriter, data interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		h.logger.Error("Failed to encode response", err)
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		return err
-	}
-	return nil
-}
-
 // handleStorageError inspects err from a storage call and, if non-nil,
-// writes the appropriate HTTP error response: a 401 JSON AuthResponse for
+// writes the appropriate JSON error response: a 401 for
 // data.ErrAuthenticationValidation, data.ErrUserAlreadyExists, or
-// data.ErrRegistrationValidation; a 404 for data.ErrUserNotFound; a 500
-// (also logging that case, using context as the log message) otherwise. It
-// reports whether a response was written, so callers should return
-// immediately when it reports true.
+// data.ErrRegistrationValidation (using the sentinel error's message); a
+// 404 for data.ErrUserNotFound; a 500 with a generic message otherwise
+// (also logging context in that case). It reports whether a response was
+// written, so callers should return immediately when it reports true.
 func (h *AccountHandler) handleStorageError(w http.ResponseWriter, err error, context string) bool {
 	if err != nil {
 		switch err {
 		case data.ErrAuthenticationValidation, data.ErrUserAlreadyExists, data.ErrRegistrationValidation:
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(AuthResponse{Success: false, Message: err.Error()})
+			writeJSONError(w, err.Error(), http.StatusUnauthorized)
 			return true
 		case data.ErrUserNotFound:
-			http.Error(w, "User not found", http.StatusNotFound)
+			writeJSONError(w, "User not found", http.StatusNotFound)
 			return true
 		default:
 			h.logger.Error(context, err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 			return true
 		}
 	}

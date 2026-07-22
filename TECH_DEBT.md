@@ -24,16 +24,18 @@ work below, since they define the seams the tests will mock against.
 
 ### 2. API error contract is ambiguous
 
-- [ ] Standardize a JSON error envelope on the Go side — auth failures in
+- [x] Standardize a JSON error envelope on the Go side — auth failures in
       `internal/handlers/account_handler.go` currently use `http.Error`
       (plaintext), which the frontend's `response.json()` can't parse
-- [ ] Check `response.ok` in `API.fetch`/`API.post`
+- [x] Check `response.ok` in `API.fetch`/`API.post`
       (`public/scripts/services/API.js`) and throw typed errors instead of
       swallowing everything into `undefined`, so callers can distinguish
-      "network down" from "401" from "empty list"
-- [ ] Add a 401 handling path: clear the stored JWT and redirect to login.
-      Today `Store.loggedIn` only checks token presence, so an expired JWT
-      leaves the UI "logged in" with no recovery
+      "network down" from "401" from "empty list". Both methods now delegate
+      to a shared `_handleResponse` helper; `LoginPage` and `RegisterPage`
+      catch and display server error messages
+- [x] Add a 401 handling path: clear the stored JWT and redirect to login.
+      `_handleResponse` clears `Store.jwt` and fires a navigation event to
+      `/account/login` on any 401 before throwing
 - [x] Remove the obsolete `try/catch` blocks around `API.getFavorites` /
       `API.getWatchlist` in `API.js` — `API.fetch` now rethrows failures,
       allowing the calling pages to decide how to recover
@@ -58,7 +60,7 @@ work below, since they define the seams the tests will mock against.
 - [x] `API.js` reads `app.Store.jwt` without importing `Store` — it works
       only through temporal coupling with `app.js`. Import `Store`
       directly
-- [ ] Build the fetch headers object conditionally in `API.js` —
+- [x] Build the fetch headers object conditionally in `API.js` —
       `Authorization: null` in an object literal actually sends the header
       with the string value `"null"`
 

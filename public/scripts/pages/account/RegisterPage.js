@@ -54,12 +54,12 @@ export class RegisterPage extends TemplateElement {
       return;
     }
 
-    const response = await API.register(name, email, password);
-    if (response.success) {
+    try {
+      const response = await API.register(name, email, password);
       Store.jwt = response.jwt;
-      super.navigate(ROUTES.ACCOUNT);
-    } else {
-      showErrorModal(response.message, false);
+      this.navigate(ROUTES.ACCOUNT);
+    } catch (e) {
+      showErrorModal(e.message, false);
     }
   }
 }

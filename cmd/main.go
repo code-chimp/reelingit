@@ -112,8 +112,8 @@ func main() {
 		accountHandler.AuthMiddleware(http.HandlerFunc(accountHandler.SaveToCollection)))
 	mux.Handle("/", spaHandler("public"))
 
-	// Wrap the completed route table so every response receives the CSP header.
-	handler := middleware.ContentSecurityPolicy(mux)
+	// Add CSP policy and CSRF protection.
+	handler := http.NewCrossOriginProtection().Handler(middleware.ContentSecurityPolicy(mux))
 
 	// Start server
 	logInstance.Info("Server starting on " + addr)

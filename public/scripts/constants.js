@@ -54,6 +54,33 @@ export const COLLECTIONS = {
 };
 
 /**
+ * HTTP status code aliases to avoid magic numbers at call sites.
+ *
+ * @type {{
+ *   OK: number,
+ *   CREATED: number,
+ *   BAD_REQUEST: number,
+ *   UNAUTHORIZED: number,
+ *   FORBIDDEN: number,
+ *   NOT_FOUND: number,
+ *   CONFLICT: number,
+ *   UNPROCESSABLE: number,
+ *   INTERNAL_SERVER_ERROR: number,
+ * }}
+ */
+export const HTTP_CODE = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  UNPROCESSABLE: 422,
+  INTERNAL_SERVER_ERROR: 500,
+};
+
+/**
  * `localStorage` keys used by `Store.js` to persist session state across
  * page reloads.
  *
