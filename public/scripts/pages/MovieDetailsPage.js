@@ -1,4 +1,4 @@
-import { COLLECTIONS, ROUTES } from '../constants.js';
+import { COLLECTIONS, HTTP_CODE, ROUTES } from '../constants.js';
 import { TemplateElement } from '../base/TemplateElement.js';
 import '../components/YouTubeEmbed.js';
 import { API } from '../services/API.js';
@@ -151,9 +151,14 @@ export class MovieDetailsPage extends TemplateElement {
       this.querySelector('#button-watchlist').addEventListener('click', () => {
         this.#saveToCollection(this.#movie.id, COLLECTIONS.WATCHLIST);
       });
-    } catch (error) {
-      console.error('Failed to fetch movie details:', error);
-      showErrorModal('Movie not found');
+    } catch (e) {
+      console.error('Failed to fetch movie details:', e);
+
+      if (e.status === HTTP_CODE.NOT_FOUND) {
+        showErrorModal('Movie not found');
+      } else {
+        showErrorModal('Error fetching movie.');
+      }
     }
   }
 }

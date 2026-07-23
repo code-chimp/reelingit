@@ -20,41 +20,54 @@ import { ROUTES } from '../constants.js';
  * in; `Router.go` redirects to `ROUTES.ACCOUNT_LOGIN` instead of mounting
  * the component when it's `true` and the user isn't.
  *
- * @type {Array<{ path: string|RegExp, component: CustomElementConstructor, protected?: boolean }>}
+ * @type {Array<{ path: string|RegExp, pageTitle: string, component: CustomElementConstructor, protected: boolean }>}
  */
 export const routes = [
   {
     path: ROUTES.HOME,
+    pageTitle: 'Movies',
     component: HomePage,
+    protected: false,
   },
   {
     path: ROUTES.MOVIES,
+    pageTitle: 'Search',
     component: MoviesPage,
+    protected: false,
   },
   {
     path: /\/movies\/(\d+)/,
+    pageTitle: 'Movie Details',
     component: MovieDetailsPage,
+    protected: false,
   },
   {
     path: ROUTES.ACCOUNT_REGISTER,
+    pageTitle: 'Sign Up',
     component: RegisterPage,
+    protected: false,
   },
   {
     path: ROUTES.ACCOUNT_LOGIN,
+    pageTitle: 'Sign In',
     component: LoginPage,
+    protected: false,
   },
   {
     path: ROUTES.ACCOUNT_FAVORITES,
+    pageTitle: 'My Favorites',
     component: FavoritesPage,
     protected: true,
   },
   {
     path: ROUTES.ACCOUNT_WATCHLIST,
+    pageTitle: 'My Watchlist',
     component: WatchlistPage,
     protected: true,
   },
   {
     path: ROUTES.ACCOUNT,
+    pageTitle: 'My Account',
     component: AccountPage,
     protected: true,
   },

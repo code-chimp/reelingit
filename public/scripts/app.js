@@ -24,12 +24,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const search = new URLSearchParams({
       q,
     });
-    Router.go(`${ROUTES.MOVIES}?q=${search}`);
+    Router.go(`${ROUTES.MOVIES}?${search}`);
   });
 
   document.querySelector('#close-alert').addEventListener('click', () => {
     closeErrorModal();
   });
 });
-
-window.app = {};

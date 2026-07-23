@@ -40,8 +40,15 @@ export class YouTubeEmbed extends HTMLElement {
    */
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data-url' && newValue.trim().length > 0) {
-      const url = this.dataset.url;
-      const videoId = new URL(url).searchParams.get('v');
+      const parsedURL = new URL(newValue);
+      const videoId =
+        parsedURL.hostname === 'youtu.be'
+          ? parsedURL.pathname.slice(1)
+          : parsedURL.searchParams.get('v');
+
+      if (!videoId) {
+        return;
+      }
 
       const iframe = document.createElement('iframe');
       iframe.width = '100%';

@@ -51,10 +51,22 @@ export class TemplateElement extends HTMLElement {
     // rather than sharing the base class's field.
     if (!this._templatePromise) {
       this._templatePromise = fetch(this.TEMPLATE_PATH)
-        .then(response => response.text())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to load template: ${response.statusText}`);
+          }
+          return response.text();
+        })
         .then(html => {
-          const parser = new DOMParser();
-          return parser.parseFromString(html, 'text/html').querySelector('template');
+          const template = new DOMParser()
+            .parseFromString(html, 'text/html')
+            .querySelector('template');
+
+          if (!template) {
+            throw new Error(`Template not found at: ${this.TEMPLATE_PATH}`);
+          }
+
+          return template;
         })
         .catch(error => {
           console.error('Failed to load template:', error);

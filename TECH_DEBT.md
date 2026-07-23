@@ -39,10 +39,11 @@ work below, since they define the seams the tests will mock against.
 - [x] Remove the obsolete `try/catch` blocks around `API.getFavorites` /
       `API.getWatchlist` in `API.js` — `API.fetch` now rethrows failures,
       allowing the calling pages to decide how to recover
-- [ ] Rework `MovieDetailsPage.render()` error handling — it currently
-      only works by accident (`undefined.title` throws a `TypeError` that
-      gets reinterpreted as "Movie not found"). Handle the not-found case
-      explicitly once `API.fetch` surfaces status codes
+- [x] Rework `MovieDetailsPage.render()` error handling — `API.fetch` now
+      rejects on non-2xx responses, but the page currently reports every
+      failure as "Movie not found." Preserve the HTTP status on the thrown
+      API error, handle 404 explicitly, and show a generic error for network
+      failures and other server responses
 
 ### 3. Query strings never encoded
 
@@ -66,14 +67,14 @@ work below, since they define the seams the tests will mock against.
 
 ### 5. Router edge cases
 
-- [ ] `popstate` handler in `services/Router.js` passes only
+- [x] `popstate` handler in `services/Router.js` passes only
       `location.pathname` while `init` passes `pathname + search` — make
       them consistent (back-button to a search URL currently survives only
       because `MoviesPage` reads `location.search` itself)
-- [ ] Check `protected` before calling `history.pushState` — the
+- [x] Check `protected` before calling `history.pushState` — the
       protected URL currently lands in history first, so the back button
       bounces the user back into the redirect
-- [ ] Move focus to `<main>` (or the new page's `h1`) and update
+- [x] Move focus to `<main>` (or the new page's `h1`) and update
       `document.title` on route changes — the two biggest SPA
       accessibility gaps; screen readers get no signal that the page
       changed
@@ -85,7 +86,7 @@ work below, since they define the seams the tests will mock against.
       `new URL(url).searchParams.get('v')`
 - [x] `HomePage.js`: fetch top and random movies with `Promise.all`
       instead of sequential `await`s
-- [ ] `TemplateElement._loadTemplate`: check `response.ok` — a missing
+- [x] `TemplateElement._loadTemplate`: check `response.ok` — a missing
       template path gets served `index.html` by the SPA fallback, so
       `querySelector('template')` returns `null` and fails with a
       confusing "cannot read content of null"

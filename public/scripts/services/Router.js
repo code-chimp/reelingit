@@ -37,7 +37,7 @@ export const Router = {
    */
   init: () => {
     window.addEventListener('popstate', () => {
-      Router.go(window.location.pathname, false);
+      Router.go(window.location.pathname + window.location.search, false);
     });
 
     document.addEventListener('click', e => {
@@ -70,23 +70,22 @@ export const Router = {
    * @returns {void}
    */
   go: (route, addToHistory = true) => {
-    if (addToHistory) {
-      history.pushState(null, null, route);
-    }
-
     const mainElement = document.querySelector('main');
     const routePath = route.split('?')[0];
+    let pageTitle = 'Movies';
     let protectedRoute = false;
     let screenElement = null;
 
     for (const r of routes) {
       if (typeof r.path === 'string' && r.path === routePath) {
+        pageTitle = r.pageTitle;
         screenElement = new r.component();
         protectedRoute = r.protected ?? false;
         break;
       } else if (r.path instanceof RegExp) {
         const match = route.match(r.path);
         if (match) {
+          pageTitle = r.pageTitle;
           screenElement = new r.component();
           screenElement.params = match.slice(1);
           protectedRoute = r.protected ?? false;
@@ -100,14 +99,21 @@ export const Router = {
       return;
     }
 
+    if (addToHistory) {
+      history.pushState(null, null, route);
+    }
+
     if (screenElement == null) {
       screenElement = document.createElement('h1');
       screenElement.textContent = 'Page not found';
+      pageTitle = `Page not found`;
     }
 
     function navigate() {
+      document.title = `ReelingIt - ${pageTitle}`;
       mainElement.innerHTML = null;
       mainElement.appendChild(screenElement);
+      mainElement.focus({ preventScroll: true });
     }
 
     const oldPage = mainElement.firstChild;
