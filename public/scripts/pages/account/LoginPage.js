@@ -1,5 +1,5 @@
 import { TemplateElement } from '../../base/TemplateElement.js';
-import { ROUTES } from '../../constants.js';
+import { MIN_EMAIL_LENGTH, MIN_PASSWORD_LENGTH, ROUTES } from '../../constants.js';
 import { API } from '../../services/API.js';
 import { showErrorModal } from '../../services/ErrorModal.js';
 import Store from '../../services/Store.js';
@@ -42,8 +42,12 @@ export class LoginPage extends TemplateElement {
     const { email, password } = Object.fromEntries(new FormData(e.target));
     const errors = [];
 
-    if (email.length < 4) errors.push('Please enter your email');
-    if (password.length < 8) errors.push('Password must be at least 8 characters long');
+    if (email.length < MIN_EMAIL_LENGTH) {
+      errors.push('Please enter your email');
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      errors.push('Password must be at least 8 characters long');
+    }
 
     if (errors.length > 0) {
       showErrorModal(errors.join('\n'), false);

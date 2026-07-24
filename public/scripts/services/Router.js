@@ -42,7 +42,9 @@ export const Router = {
 
     document.addEventListener('click', e => {
       const anchor = e.target.closest('a.navlink');
-      if (!anchor) return;
+      if (!anchor) {
+        return;
+      }
 
       e.preventDefault();
       Router.go(anchor.getAttribute('href'));

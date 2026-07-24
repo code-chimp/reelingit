@@ -31,9 +31,9 @@ export class AnimatedLoading extends HTMLElement {
    * @returns {void}
    */
   connectedCallback() {
-    let qty = this.dataset.elements ?? 1;
-    let width = this.dataset.width ?? '100px';
-    let height = this.dataset.height ?? '10px';
+    const qty = this.dataset.elements ?? 1;
+    const width = this.dataset.width ?? '100px';
+    const height = this.dataset.height ?? '10px';
     for (let i = 0; i < qty; i++) {
       const wrapper = document.createElement('div');
       wrapper.setAttribute('class', 'loading-wave');

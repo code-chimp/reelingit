@@ -61,7 +61,7 @@ export class MovieDetailsPage extends TemplateElement {
           showErrorModal("We couldn't save the movie.");
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else {
       this.navigate(ROUTES.ACCOUNT);
@@ -88,7 +88,7 @@ export class MovieDetailsPage extends TemplateElement {
    */
   async render() {
     try {
-      this.#movie = await API.getMovieById(+this.#movie.id);
+      this.#movie = await API.getMovieById(Number(this.#movie.id));
 
       this.querySelector('h2').textContent = this.#movie.title;
       this.querySelector('h3').textContent = this.#movie.tagline;

@@ -12,14 +12,15 @@
     "fix:format": "prettier --write ./public",
     "lint:styles": "stylelint \"./public/**/*.css\"",
     "fix:styles": "stylelint \"./public/**/*.css\" --fix",
-    "lint:js": "eslint \"./public/**/*.js\"",
-    "fix:js": "eslint \"./public/**/*.js\" --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:code": "eslint \".\"",
+    "fix:code": "eslint \".\" --fix",
+    "test:unit": "vitest",
+    "test:e2e": "playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "allowScripts": {
     "rs-module-lexer@2.8.0": true
   },
@@ -27,15 +28,28 @@
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@eslint/js": "^10.0.1",
-    "browserslist": "^4.28.6",
+    "@eslint/json": "^2.0.1",
+    "@eslint/markdown": "^8.0.3",
+    "@html-eslint/eslint-plugin": "^0.64.0",
+    "@html-eslint/parser": "^0.64.0",
+    "@playwright/test": "^1.61.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^26.1.1",
+    "@vitest/eslint-plugin": "^1.6.24",
+    "browserslist": "^4.28.7",
     "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
     "globals": "^17.7.0",
+    "jsdom": "^29.1.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.9.5",
-    "stylelint": "^17.14.0",
+    "prettier": "^3.9.6",
+    "stylelint": "^17.14.1",
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-no-unsupported-browser-features": "^8.1.1",
     "vite": "^8.1.5",
-    "vite-plugin-static-copy": "^4.1.1"
+    "vite-plugin-static-copy": "^4.1.1",
+    "vitest": "^4.1.10"
   }
 }

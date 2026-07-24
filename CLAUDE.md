@@ -9,7 +9,8 @@ ReelingIt is a movie browsing app: a Go backend (stdlib `net/http`, PostgreSQL v
 ## Commands
 
 Backend (run from repo root, requires `.env` with `DATABASE_URL` and `PORT`):
-```
+
+```sh
 go run ./cmd/main.go        # run the server once
 air                          # hot-reload dev server (config: .air.toml, builds to ./tmp/main)
 go build ./...                # compile check
@@ -17,13 +18,16 @@ go vet ./...
 ```
 
 Local Postgres:
-```
+
+```sh
 docker-compose up -d          # starts postgres on :5432 (db/user/pass: reelingit)
 ```
+
 Seed data comes from `import/database-dump.sql` and `import/install.go`.
 
 Frontend lint/format (no build step — static files served directly from `public/`):
-```
+
+```sh
 npm run lint          # runs lint:format + lint:styles
 npm run lint:format   # prettier --check ./public
 npm run fix:format    # prettier --write ./public

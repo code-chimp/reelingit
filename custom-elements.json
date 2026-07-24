@@ -4,6 +4,18 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "e2e/example.spec.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/vitest.setup.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/scripts/app.js",
       "declarations": [],
       "exports": []
@@ -41,12 +53,45 @@
         },
         {
           "kind": "variable",
+          "name": "HTTP_CODE",
+          "type": {
+            "text": "{\n *   OK: number,\n *   CREATED: number,\n *   BAD_REQUEST: number,\n *   UNAUTHORIZED: number,\n *   FORBIDDEN: number,\n *   NOT_FOUND: number,\n *   CONFLICT: number,\n *   UNPROCESSABLE: number,\n *   INTERNAL_SERVER_ERROR: number,\n * }"
+          },
+          "default": "{ OK: 200, CREATED: 201, BAD_REQUEST: 400, UNAUTHORIZED: 401, FORBIDDEN: 403, NOT_FOUND: 404, CONFLICT: 409, UNPROCESSABLE: 422, INTERNAL_SERVER_ERROR: 500, }",
+          "description": "HTTP status code aliases to avoid magic numbers at call sites."
+        },
+        {
+          "kind": "variable",
           "name": "STORAGE_KEYS",
           "type": {
             "text": "{ JWT: string }"
           },
           "default": "{ JWT: 'jwt', }",
           "description": "`localStorage` keys used by `Store.js` to persist session state across\npage reloads."
+        },
+        {
+          "kind": "variable",
+          "name": "MIN_EMAIL_LENGTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "4"
+        },
+        {
+          "kind": "variable",
+          "name": "MIN_NAME_LENGTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "4"
+        },
+        {
+          "kind": "variable",
+          "name": "MIN_PASSWORD_LENGTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "8"
         }
       ],
       "exports": [
@@ -76,9 +121,41 @@
         },
         {
           "kind": "js",
+          "name": "HTTP_CODE",
+          "declaration": {
+            "name": "HTTP_CODE",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "STORAGE_KEYS",
           "declaration": {
             "name": "STORAGE_KEYS",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MIN_EMAIL_LENGTH",
+          "declaration": {
+            "name": "MIN_EMAIL_LENGTH",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MIN_NAME_LENGTH",
+          "declaration": {
+            "name": "MIN_NAME_LENGTH",
+            "module": "public/scripts/constants.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MIN_PASSWORD_LENGTH",
+          "declaration": {
+            "name": "MIN_PASSWORD_LENGTH",
             "module": "public/scripts/constants.js"
           }
         }
@@ -86,51 +163,66 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/public/assets/index-i_ksNH22.js",
+      "path": "dist/public/assets/index-CgJPtgXr.js",
       "declarations": [
         {
           "kind": "variable",
-          "name": "m"
+          "name": "l",
+          "default": "class extends HTMLElement{#e;constructor(e){super(),this.#e=e}connectedCallback(){let e=document.createElement(`a`);e.classList.add(`navlink`),e.href=`${t.MOVIES}/${this.#e.id}`;let n=document.createElement(`img`);n.src=`${this.#e.poster_url}`,n.alt=`${this.#e.title} Poster`;let r=document.createElement(`p`);r.textContent=`${this.#e.title} (${this.#e.release_year})`;let i=document.createElement(`article`);i.appendChild(n),i.appendChild(r),e.appendChild(i),this.appendChild(e)}}"
         },
         {
           "kind": "variable",
-          "name": "g"
+          "name": "u",
+          "default": "class extends a{static TEMPLATE_PATH=`/scripts/pages/home-page.html`;#e(e,t){t.innerHTML=``,e.forEach(e=>{let n=document.createElement(`li`);n.appendChild(new l(e)),t.appendChild(n)})}async render(){try{let e=c.getTopMovies(),t=c.getRandomMovies(),[n,r]=await Promise.all([e,t]);this.#e(n,this.querySelector(`#top-10 ul`)),this.#e(r,this.querySelector(`#random ul`))}catch(e){console.error(`Error rendering movies:`,e)}}}"
         },
         {
           "kind": "variable",
-          "name": "x"
+          "name": "p",
+          "default": "class extends a{static TEMPLATE_PATH=`/scripts/pages/account/account-page.html`;async render(){this.querySelector(`#logout-button`).addEventListener(`click`,()=>{s.jwt=null,this.navigate(t.HOME)}),this.querySelector(`#favorites`).addEventListener(`click`,()=>{this.navigate(t.ACCOUNT_FAVORITES)}),this.querySelector(`#watchlist`).addEventListener(`click`,()=>{this.navigate(t.ACCOUNT_WATCHLIST)})}}"
         },
         {
           "kind": "variable",
-          "name": "T"
+          "name": "h",
+          "default": "class extends m{constructor(){super(c.getFavorites,`Favorite Movies`)}}"
         },
         {
           "kind": "variable",
-          "name": "D"
+          "name": "g",
+          "default": "class extends a{static TEMPLATE_PATH=`/scripts/pages/account/login-page.html`;async render(){this.querySelector(`form`).addEventListener(`submit`,e=>this.#e(e))}async#e(e){e.preventDefault();let{email:n,password:r}=Object.fromEntries(new FormData(e.target)),i=[];if(n.length<4&&i.push(`Please enter your email`),r.length<8&&i.push(`Password must be at least 8 characters long`),i.length>0){d(i.join(` `),!1);return}try{s.jwt=(await c.authenticate(n,r)).jwt,this.navigate(t.ACCOUNT)}catch(e){d(e.message,!1)}}}"
         },
         {
           "kind": "variable",
-          "name": "k"
+          "name": "_",
+          "default": "class extends HTMLElement{static get observedAttributes(){return[`data-url`]}attributeChangedCallback(e,t,n){if(e===`data-url`&&n.trim().length>0){let e=new URL(n),t=e.hostname===`youtu.be`?e.pathname.slice(1):e.searchParams.get(`v`);if(!t)return;let r=document.createElement(`iframe`);r.width=`100%`,r.height=`300`,r.src=`https://www.youtube.com/embed/${t}`,r.title=`YouTube video player`,r.frameBorder=`0`,r.allow=`accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share`,r.referrerPolicy=`strict-origin-when-cross-origin`,r.allowFullscreen=!0,this.appendChild(r)}}}"
         },
         {
           "kind": "variable",
-          "name": "j"
+          "name": "v",
+          "default": "class extends a{static TEMPLATE_PATH=`/scripts/pages/movie-details-page.html`;#e;async#t(e,r){if(s.loggedIn)try{if((await c.saveToCollection(e,r)).success)switch(r){case n.FAVORITE:this.navigate(t.ACCOUNT_FAVORITES);break;case n.WATCHLIST:this.navigate(t.ACCOUNT_WATCHLIST)}else d(`We couldn't save the movie.`)}catch(e){console.error(e)}else this.navigate(t.ACCOUNT)}connectedCallback(){this.#e={id:this.params[0]},super.connectedCallback()}async render(){try{this.#e=await c.getMovieById(Number(this.#e.id)),this.querySelector(`h2`).textContent=this.#e.title,this.querySelector(`h3`).textContent=this.#e.tagline,this.querySelector(`img`).src=this.#e.poster_url,this.querySelector(`#trailer`).dataset.url=this.#e.trailer_url;let e=this.querySelector(`#metadata`),t=document.createElement(`dt`);t.textContent=`Release Year`;let r=document.createElement(`dd`);r.textContent=this.#e.release_year;let i=document.createElement(`dt`);i.textContent=`Score`;let a=document.createElement(`dd`);a.textContent=`${this.#e.score} / 10`;let o=document.createElement(`dt`);o.textContent=`Popularity`;let s=document.createElement(`dd`);s.textContent=`${this.#e.popularity}`,e.appendChild(t),e.appendChild(r),e.appendChild(i),e.appendChild(a),e.appendChild(o),e.appendChild(s);let l=this.querySelector(`#genres`);this.#e.genres.forEach(e=>{let t=document.createElement(`li`);t.textContent=e.name,l.appendChild(t)}),this.querySelector(`#overview`).textContent=this.#e.overview;let u=this.querySelector(`#cast`);this.#e.casting.forEach(e=>{let t=document.createElement(`img`);t.src=e.image_url??`/images/generic_actor.jpg`,t.alt=`Picture of ${e.first_name} ${e.last_name}`;let n=document.createElement(`p`);n.textContent=`${e.first_name} ${e.last_name}`;let r=document.createElement(`li`);r.appendChild(t),r.appendChild(n),u.appendChild(r)}),this.querySelector(`#button-favorites`).addEventListener(`click`,()=>{this.#t(this.#e.id,n.FAVORITE)}),this.querySelector(`#button-watchlist`).addEventListener(`click`,()=>{this.#t(this.#e.id,n.WATCHLIST)})}catch(e){console.error(`Failed to fetch movie details:`,e),e.status===r.NOT_FOUND?d(`Movie not found`):d(`Error fetching movie.`)}}}"
         },
         {
           "kind": "variable",
-          "name": "N"
+          "name": "y",
+          "default": "class e extends a{static TEMPLATE_PATH=`/scripts/pages/movies-page.html`;static#e=[];#t=``;#n=``;#r=``;async#i(){if(e.#e.length===0)try{e.#e=await c.getGenres()}catch(t){console.error(t),e.#e=[]}let t=this.querySelector(`select#filter`);t.innerHTML=``;let n=document.createElement(`option`);n.value=``,n.textContent=`All Genres`,t.appendChild(n),e.#e.forEach(e=>{let n=document.createElement(`option`);n.value=e.id,n.textContent=e.name,t.appendChild(n)})}connectedCallback(){let e=new URLSearchParams(window.location.search);this.#t=e.get(`q`)??``,this.#n=e.get(`order`)??``,this.#r=e.get(`genre`)??``,super.connectedCallback()}async render(){if(this.#t!==``)this.querySelector(`h2`).textContent=`Search Results for \"${this.#t}\"`;else{d(`Please enter a search term`);return}let e=await c.searchMovies(this.#t,this.#n,this.#r);await this.#i();let t=this.querySelector(`ul`);if(t.innerHTML=``,e&&e.length>0)e.forEach(e=>{let n=document.createElement(`li`);n.appendChild(new l(e)),t.appendChild(n)});else{let e=document.createElement(`h3`);e.textContent=`Could not find movies with the search term: ${this.#t}`;let n=document.createElement(`li`);n.appendChild(e),t.appendChild(n)}this.#r&&(this.querySelector(`select#filter`).value=this.#r),this.#n&&(this.querySelector(`select#order`).value=this.#n),this.querySelector(`select#filter`).addEventListener(`change`,e=>this.#a(e)),this.querySelector(`select#order`).addEventListener(`change`,e=>this.#o(e))}#a(e){let n=new URLSearchParams({q:this.#t,genre:e.target.value,order:this.#n});this.navigate(`${t.MOVIES}?${n}`)}#o(e){let n=new URLSearchParams({q:this.#t,genre:this.#r,order:e.target.value});this.navigate(`${t.MOVIES}?${n}`)}}"
         },
         {
           "kind": "variable",
-          "name": "F"
+          "name": "b",
+          "default": "class extends a{static TEMPLATE_PATH=`/scripts/pages/account/register-page.html`;async render(){this.querySelector(`form`).addEventListener(`submit`,e=>this.#e(e))}async#e(e){e.preventDefault();let{name:n,email:r,password:i,passwordConfirm:a}=Object.fromEntries(new FormData(e.target)),o=[];if(n.length<4&&o.push(`Name must be at least 4 characters long`),r.length<4&&o.push(`Please enter your email`),i.length<8&&o.push(`Password must be at least 8 characters long`),i!==a&&o.push(`Passwords do not match`),o.length>0){d(o.join(` `),!1);return}try{s.jwt=(await c.register(n,r,i)).jwt,this.navigate(t.ACCOUNT)}catch(e){d(e.message,!1)}}}"
         },
         {
           "kind": "variable",
-          "name": "L"
+          "name": "x",
+          "default": "class extends m{constructor(){super(c.getWatchlist,`Movies in Watchlist`)}}"
         },
         {
           "kind": "variable",
-          "name": "U"
+          "name": "w",
+          "default": "class extends HTMLElement{constructor(){super()}connectedCallback(){let e=this.dataset.elements??1,t=this.dataset.width??`100px`,n=this.dataset.height??`10px`;for(let r=0;r<e;r++){let e=document.createElement(`div`);e.setAttribute(`class`,`loading-wave`),e.style.width=t,e.style.height=n,e.style.margin=`10px`,e.style.display=`inline-block`,this.appendChild(e)}}}"
+        },
+        {
+          "kind": "function",
+          "name": "l"
         }
       ],
       "exports": [
@@ -138,88 +230,197 @@
           "kind": "custom-element-definition",
           "name": "movie-item",
           "declaration": {
-            "name": "m",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "l",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "home-page",
           "declaration": {
-            "name": "g",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "u",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "account-page",
           "declaration": {
-            "name": "x",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "p",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "favorites-page",
           "declaration": {
-            "name": "T",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "h",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "login-page",
           "declaration": {
-            "name": "D",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "g",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "youtube-embed",
           "declaration": {
-            "name": "k",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "_",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "movie-details",
           "declaration": {
-            "name": "j",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "v",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "movie-page",
           "declaration": {
-            "name": "N",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "y",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "register-page",
           "declaration": {
-            "name": "F",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "b",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "watchlist-page",
           "declaration": {
-            "name": "L",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "x",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
           }
         },
         {
           "kind": "custom-element-definition",
           "name": "animated-loading",
           "declaration": {
-            "name": "U",
-            "module": "dist/public/assets/index-i_ksNH22.js"
+            "name": "w",
+            "module": "dist/public/assets/index-CgJPtgXr.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/base/TemplateElement.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Base class for web components that load HTML templates from external files.\n\nSubclasses should define a static `TEMPLATE_PATH` property pointing to their\nHTML template file, and implement the `render()` method with component-specific logic.\nThe base class handles template loading, caching, and DOM injection via the\nconnectedCallback lifecycle.\n\nUse it like this:\n```js\nexport class MyElement extends TemplateElement {\n  static TEMPLATE_PATH = '/scripts/my-element.html';\n\n  async render() {\n    // Update DOM with data\n  }\n}\n\ncustomElements.define('my-element', MyElement);\n```",
+          "name": "TemplateElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_templatePromise",
+              "static": true,
+              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
+              "type": {
+                "text": "Promise<HTMLTemplateElement>"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplate",
+              "static": true,
+              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLTemplateElement>"
+                }
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#initialize",
+              "privacy": "private",
+              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "navigate",
+              "parameters": [
+                {
+                  "name": "route",
+                  "description": "Application route, optionally including a query string.",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Requests a client-side navigation without importing the router.\n\nThe router listens for this document-level event and owns the actual\nhistory update and page transition.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "parameters": [
+                {
+                  "name": "e",
+                  "description": "The error that occurred during initialization",
+                  "type": {
+                    "text": "Error"
+                  }
+                }
+              ],
+              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "summary": "Base class for template-loading custom elements",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TemplateElement",
+          "declaration": {
+            "name": "TemplateElement",
+            "module": "public/scripts/base/TemplateElement.js"
           }
         }
       ]
@@ -234,7 +435,7 @@
           "type": {
             "text": "object"
           },
-          "default": "{ baseURL: '/api/', /** * Fetches JSON from a path under `baseURL`, optionally appending `args` as * a query string. * * Network and response-parsing failures are logged and rethrown so the * caller can choose the appropriate UI recovery behavior. * * @param {string} service - Path under `baseURL`, e.g. `movies/top` * @param {Record<string, string>} [args] - Query params to append * @returns {Promise<any>} Parsed JSON response. * @throws {Error} When the request fails or the response cannot be parsed as JSON. */ fetch: async (service, args) => { const queryString = args ? new URLSearchParams(args).toString() : ''; try { const response = await fetch( `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`, { headers: { Authorization: Store.jwt ? `Bearer ${Store.jwt}` : null, }, }, ); return await response.json(); } catch (e) { console.error(e); throw e; } }, /** * POSTs `args` as a JSON body to a path under `baseURL`. * * Network and response-parsing failures are logged and rethrown so the * calling form or page can present an appropriate error state. * * @param {string} service - Path under `baseURL`, e.g. `account/register` * @param {Record<string, unknown>} args - Request body, serialized as JSON * @returns {Promise<any>} Parsed JSON response. * @throws {Error} When the request fails or the response cannot be parsed as JSON. */ post: async (service, args) => { try { const response = await fetch(API.baseURL + service, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: Store.jwt ? `Bearer ${Store.jwt}` : null, }, body: JSON.stringify(args), }); return await response.json(); } catch (e) { console.error(e); throw e; } }, /** * @returns {Promise<Array<object>>} This week's top movies. */ getTopMovies: async () => { return await API.fetch('movies/top'); }, /** * @returns {Promise<Array<object>>} A random selection of movies. */ getRandomMovies: async () => { return await API.fetch('movies/random'); }, /** * @param {number|string} id - Movie ID * @returns {Promise<object>} The movie matching `id`. */ getMovieById: async id => { return await API.fetch(`movies/${id}`); }, /** * @param {string} q - Search text * @param {string} [order] - Sort order * @param {string} [genre] - Genre filter * @returns {Promise<Array<object>>} Movies matching the search criteria. */ searchMovies: async (q, order, genre) => { return await API.fetch(`movies/search`, { q, order, genre }); }, /** * @returns {Promise<Array<object>>} All genres. */ getGenres: async () => { return await API.fetch('genres'); }, /** * Creates a new account via `POST /api/account/register`. * * @param {string} name - Display name * @param {string} email - Account email, used as the login identifier * @param {string} password - Plaintext password; hashed server-side * @returns {Promise<{success: boolean, message: string, jwt: string}>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. duplicate email). */ register: async (name, email, password) => { return await API.post('account/register', { name, email, password }); }, /** * Logs an existing account in via `POST /api/account/authenticate`. * * @param {string} email - Account email * @param {string} password - Plaintext password, checked against the stored hash * @returns {Promise<{success: boolean, message: string, jwt: string}>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. invalid credentials). */ authenticate: async (email, password) => { return await API.post('account/authenticate', { email, password }); }, /** * Fetches the current user's favorited movies via * `GET /api/account/favorites`. Requires an authenticated session (a JWT * in `Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>>} The user's favorited movies. */ getFavorites: async () => { return await API.fetch('account/favorites'); }, /** * Fetches the current user's watchlisted movies via * `GET /api/account/watchlist`. Requires an authenticated session (a JWT * in `Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>>} The user's watchlisted movies. */ getWatchlist: async () => { return await API.fetch('account/watchlist'); }, /** * Saves a movie to a named collection for the current user via * `POST /api/account/save-to-collection`. Requires an authenticated * session (a JWT in `Store.jwt`). * * @param {number|string} movie_id - ID of the movie to save * @param {string} collection - Target collection, one of `COLLECTIONS`'s values * @returns {Promise<{success: boolean, message: string}>} Save result. */ saveToCollection: async (movie_id, collection) => { return await API.post('account/save-to-collection', { movie_id, collection }); }, }",
+          "default": "{ baseURL: '/api/', /** * Shared response handler for `fetch` and `post`. * * On a 401, clears the stored JWT and fires a navigation event to the login * screen before throwing, so the caller's catch block still receives the * error. On any other non-ok status, extracts the server's `error` field * from the JSON body (falling back to a generic message) and throws. On * success, returns the parsed JSON body. * * @param {Response} response - The raw `fetch` response to inspect. * @returns {Promise<any>} Parsed JSON body of a successful response. * @throws {Error} For any non-2xx response, with the server's error message * if available. */ _handleResponse: async response => { if (response.status === HTTP_CODE.UNAUTHORIZED) { Store.jwt = null; document.dispatchEvent( new CustomEvent(CUSTOM_EVENTS.NAVIGATE, { detail: { route: ROUTES.ACCOUNT_LOGIN, }, }), ); } if (!response.ok) { const body = await response.json().catch(() => ({})); const error = new Error(body.error ?? 'Request failed'); error.status = response.status; throw error; } return await response.json(); }, /** * Fetches JSON from a path under `baseURL`, optionally appending `args` as * a query string. Non-ok responses and 401s are handled by `_handleResponse`. * * @param {string} service - Path under `baseURL`, e.g. `movies/top` * @param {Record<string, string>} [args] - Query params to append * @returns {Promise<any>} Parsed JSON response. * @throws {Error} On network failure, non-ok response, or JSON parse error. */ fetch: async (service, args) => { const queryString = args ? new URLSearchParams(args).toString() : ''; try { const response = await fetch( `${API.baseURL}${service}${queryString ? `?${queryString}` : ''}`, { headers: Store.jwt ? { Authorization: `Bearer ${Store.jwt}`, } : {}, }, ); return await API._handleResponse(response); } catch (e) { console.error(e); throw e; } }, /** * POSTs `args` as a JSON body to a path under `baseURL`. Non-ok responses * and 401s are handled by `_handleResponse`. * * @param {string} service - Path under `baseURL`, e.g. `account/register` * @param {Record<string, unknown>} args - Request body, serialized as JSON * @returns {Promise<any>} Parsed JSON response. * @throws {Error} On network failure, non-ok response, or JSON parse error. */ post: async (service, args) => { try { const response = await fetch(API.baseURL + service, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(Store.jwt ? { Authorization: `Bearer ${Store.jwt}` } : {}), }, body: JSON.stringify(args), }); return await API._handleResponse(response); } catch (e) { console.error(e); throw e; } }, /** * @returns {Promise<Array<object>>} This week's top movies. */ getTopMovies: async () => { return await API.fetch('movies/top'); }, /** * @returns {Promise<Array<object>>} A random selection of movies. */ getRandomMovies: async () => { return await API.fetch('movies/random'); }, /** * @param {number|string} id - Movie ID * @returns {Promise<object>} The movie matching `id`. */ getMovieById: async id => { return await API.fetch(`movies/${id}`); }, /** * @param {string} q - Search text * @param {string} [order] - Sort order * @param {string} [genre] - Genre filter * @returns {Promise<Array<object>>} Movies matching the search criteria. */ searchMovies: async (q, order, genre) => { return await API.fetch(`movies/search`, { q, order, genre }); }, /** * @returns {Promise<Array<object>>} All genres. */ getGenres: async () => { return await API.fetch('genres'); }, /** * Creates a new account via `POST /api/account/register`. * * @param {string} name - Display name * @param {string} email - Account email, used as the login identifier * @param {string} password - Plaintext password; hashed server-side * @returns {Promise<{success: boolean, message: string, jwt: string}>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. duplicate email). */ register: async (name, email, password) => { return await API.post('account/register', { name, email, password }); }, /** * Logs an existing account in via `POST /api/account/authenticate`. * * @param {string} email - Account email * @param {string} password - Plaintext password, checked against the stored hash * @returns {Promise<{success: boolean, message: string, jwt: string}>} * Auth result. On success `jwt` is a signed token to store for * subsequent authenticated requests; on failure `success` is `false` * and `message` explains why (e.g. invalid credentials). */ authenticate: async (email, password) => { return await API.post('account/authenticate', { email, password }); }, /** * Fetches the current user's favorited movies via * `GET /api/account/favorites`. Requires an authenticated session (a JWT * in `Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>>} The user's favorited movies. */ getFavorites: async () => { return await API.fetch('account/favorites'); }, /** * Fetches the current user's watchlisted movies via * `GET /api/account/watchlist`. Requires an authenticated session (a JWT * in `Store.jwt`), since the backend derives the user from it. * * @returns {Promise<Array<object>>} The user's watchlisted movies. */ getWatchlist: async () => { return await API.fetch('account/watchlist'); }, /** * Saves a movie to a named collection for the current user via * `POST /api/account/save-to-collection`. Requires an authenticated * session (a JWT in `Store.jwt`). * * @param {number|string} movie_id - ID of the movie to save * @param {string} collection - Target collection, one of `COLLECTIONS`'s values * @returns {Promise<{success: boolean, message: string}>} Save result. */ saveToCollection: async (movie_id, collection) => { return await API.post('account/save-to-collection', { movie_id, collection }); }, }",
           "description": "Client for the ReelingIt backend's `/api/` movie endpoints.\n\nUse it like this:\n```js\nimport { API } from './services/API.js';\n\nconst movie = await API.getMovieById(14);\n```",
           "summary": "Movie API client"
         }
@@ -324,7 +525,7 @@
           "type": {
             "text": "object"
           },
-          "default": "{ /** * Wires browser history, delegated nav-link clicks, and document-level * navigation requests, then renders the screen for the current URL. Call * once on app startup. * * @returns {void} */ init: () => { window.addEventListener('popstate', () => { Router.go(window.location.pathname, false); }); document.addEventListener('click', e => { const anchor = e.target.closest('a.navlink'); if (!anchor) return; e.preventDefault(); Router.go(anchor.getAttribute('href')); }); document.addEventListener(CUSTOM_EVENTS.NAVIGATE, e => { Router.go(e.detail.route); }); // go to the initial route Router.go(location.pathname + location.search); }, /** * Matches `route` against the declared `routes` and mounts the matching * screen component into `<main>`, replacing any current content, using a * view transition (`document.startViewTransition`) when the browser * supports it. Falls back to a \"Page not found\" heading when no route * matches. If the matched route is `protected` and the user isn't logged * in (per `Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN` * instead of mounting anything. * * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`) * @param {boolean} [addToHistory=true] - Whether to push `route` onto browser history. Pass `false` when responding to a `popstate` event, since the entry already exists. * @returns {void} */ go: (route, addToHistory = true) => { if (addToHistory) { history.pushState(null, null, route); } const mainElement = document.querySelector('main'); const routePath = route.split('?')[0]; let protectedRoute = false; let screenElement = null; for (const r of routes) { if (typeof r.path === 'string' && r.path === routePath) { screenElement = new r.component(); protectedRoute = r.protected ?? false; break; } else if (r.path instanceof RegExp) { const match = route.match(r.path); if (match) { screenElement = new r.component(); screenElement.params = match.slice(1); protectedRoute = r.protected ?? false; break; } } } if (protectedRoute && !Store.loggedIn) { Router.go(ROUTES.ACCOUNT_LOGIN); return; } if (screenElement == null) { screenElement = document.createElement('h1'); screenElement.textContent = 'Page not found'; } function navigate() { mainElement.innerHTML = null; mainElement.appendChild(screenElement); } const oldPage = mainElement.firstChild; if (!document.startViewTransition) { navigate(); return; } if (oldPage) { mainElement.style.viewTransitionName = 'old'; } screenElement.style.viewTransitionName = 'new'; document.startViewTransition(() => { navigate(); }); }, }",
+          "default": "{ /** * Wires browser history, delegated nav-link clicks, and document-level * navigation requests, then renders the screen for the current URL. Call * once on app startup. * * @returns {void} */ init: () => { window.addEventListener('popstate', () => { Router.go(window.location.pathname + window.location.search, false); }); document.addEventListener('click', e => { const anchor = e.target.closest('a.navlink'); if (!anchor) { return; } e.preventDefault(); Router.go(anchor.getAttribute('href')); }); document.addEventListener(CUSTOM_EVENTS.NAVIGATE, e => { Router.go(e.detail.route); }); // go to the initial route Router.go(location.pathname + location.search); }, /** * Matches `route` against the declared `routes` and mounts the matching * screen component into `<main>`, replacing any current content, using a * view transition (`document.startViewTransition`) when the browser * supports it. Falls back to a \"Page not found\" heading when no route * matches. If the matched route is `protected` and the user isn't logged * in (per `Store.loggedIn`), redirects to `ROUTES.ACCOUNT_LOGIN` * instead of mounting anything. * * @param {string} route - Path to navigate to, optionally including a query string (e.g. `/movies/14?ref=home`) * @param {boolean} [addToHistory=true] - Whether to push `route` onto browser history. Pass `false` when responding to a `popstate` event, since the entry already exists. * @returns {void} */ go: (route, addToHistory = true) => { const mainElement = document.querySelector('main'); const routePath = route.split('?')[0]; let pageTitle = 'Movies'; let protectedRoute = false; let screenElement = null; for (const r of routes) { if (typeof r.path === 'string' && r.path === routePath) { pageTitle = r.pageTitle; screenElement = new r.component(); protectedRoute = r.protected ?? false; break; } else if (r.path instanceof RegExp) { const match = route.match(r.path); if (match) { pageTitle = r.pageTitle; screenElement = new r.component(); screenElement.params = match.slice(1); protectedRoute = r.protected ?? false; break; } } } if (protectedRoute && !Store.loggedIn) { Router.go(ROUTES.ACCOUNT_LOGIN); return; } if (addToHistory) { history.pushState(null, null, route); } if (screenElement == null) { screenElement = document.createElement('h1'); screenElement.textContent = 'Page not found'; pageTitle = `Page not found`; } function navigate() { document.title = `ReelingIt - ${pageTitle}`; mainElement.innerHTML = null; mainElement.appendChild(screenElement); mainElement.focus({ preventScroll: true }); } const oldPage = mainElement.firstChild; if (!document.startViewTransition) { navigate(); return; } if (oldPage) { mainElement.style.viewTransitionName = 'old'; } screenElement.style.viewTransitionName = 'new'; document.startViewTransition(() => { navigate(); }); }, }",
           "description": "Client-side router that swaps the contents of `<main>` based on the URL,\nwithout a full page reload.\n\nRoutes are declared in `routes.js` as `{ path, component, protected }`\nentries, where `path` is either an exact string or a `RegExp` matched\nagainst the full route (including query string). For a `RegExp` match,\nany capture groups are exposed to the mounted screen as\n`screenElement.params`. Routes marked `protected` redirect to\n`ROUTES.ACCOUNT_LOGIN` instead of mounting when the user isn't logged in.\n\nUse it like this:\n```js\nimport { Router } from './services/Router.js';\n\nwindow.addEventListener('DOMContentLoaded', () => Router.init());\n```\n\nTo navigate programmatically (e.g. from a link click handler):\n```js\nRouter.go('/movies/14');\n```",
           "summary": "Client-side router for swapping pages into `<main>`"
         }
@@ -369,9 +570,9 @@
           "kind": "variable",
           "name": "routes",
           "type": {
-            "text": "Array<{ path: string|RegExp, component: CustomElementConstructor, protected?: boolean }>"
+            "text": "Array<{ path: string|RegExp, pageTitle: string, component: CustomElementConstructor, protected: boolean }>"
           },
-          "default": "[ { path: ROUTES.HOME, component: HomePage, }, { path: ROUTES.MOVIES, component: MoviesPage, }, { path: /\\/movies\\/(\\d+)/, component: MovieDetailsPage, }, { path: ROUTES.ACCOUNT_REGISTER, component: RegisterPage, }, { path: ROUTES.ACCOUNT_LOGIN, component: LoginPage, }, { path: ROUTES.ACCOUNT_FAVORITES, component: FavoritesPage, protected: true, }, { path: ROUTES.ACCOUNT_WATCHLIST, component: WatchlistPage, protected: true, }, { path: ROUTES.ACCOUNT, component: AccountPage, protected: true, }, ]",
+          "default": "[ { path: ROUTES.HOME, pageTitle: 'Movies', component: HomePage, protected: false, }, { path: ROUTES.MOVIES, pageTitle: 'Search', component: MoviesPage, protected: false, }, { path: /\\/movies\\/(\\d+)/, pageTitle: 'Movie Details', component: MovieDetailsPage, protected: false, }, { path: ROUTES.ACCOUNT_REGISTER, pageTitle: 'Sign Up', component: RegisterPage, protected: false, }, { path: ROUTES.ACCOUNT_LOGIN, pageTitle: 'Sign In', component: LoginPage, protected: false, }, { path: ROUTES.ACCOUNT_FAVORITES, pageTitle: 'My Favorites', component: FavoritesPage, protected: true, }, { path: ROUTES.ACCOUNT_WATCHLIST, pageTitle: 'My Watchlist', component: WatchlistPage, protected: true, }, { path: ROUTES.ACCOUNT, pageTitle: 'My Account', component: AccountPage, protected: true, }, ]",
           "description": "Route table consumed by `Router.js`.\n\nEach entry is `{ path, component, protected }`, where `path` is either an\nexact string match against the route's pathname, or a `RegExp` matched\nagainst the full route (including query string) whose capture groups are\nexposed to the mounted component as `screenElement.params`. `component`\nis a `HTMLElement` subclass constructed with `new` and appended to\n`<main>`. `protected` (default `false`) requires the user to be logged\nin; `Router.go` redirects to `ROUTES.ACCOUNT_LOGIN` instead of mounting\nthe component when it's `true` and the user isn't."
         }
       ],
@@ -382,151 +583,6 @@
           "declaration": {
             "name": "routes",
             "module": "public/scripts/services/routes.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/components/AnimatedLoading.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Renders one or more animated skeleton placeholder bars while content loads.\n\nOn connect, the element appends child `div` elements styled with the global\n`.loading-wave` CSS animation. Configuration is read from `data-*` attributes\nwhen the element is inserted into the DOM.\n\nUse it like this:\n```html\n<animated-loading data-elements=\"5\" data-width=\"150px\" data-height=\"220px\">\n</animated-loading>\n```",
-          "name": "AnimatedLoading",
-          "attributes": [
-            {
-              "type": {
-                "text": "number"
-              },
-              "description": "Number of placeholder bars to render (default: 1)",
-              "name": "data-elements"
-            },
-            {
-              "type": {
-                "text": "string"
-              },
-              "description": "CSS width for each placeholder bar (default: 100px)",
-              "name": "data-width"
-            },
-            {
-              "type": {
-                "text": "string"
-              },
-              "description": "CSS height for each placeholder bar (default: 10px)",
-              "name": "data-height"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "animated-loading",
-          "customElement": true,
-          "summary": "Animated skeleton loading placeholders"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "AnimatedLoading",
-          "declaration": {
-            "name": "AnimatedLoading",
-            "module": "public/scripts/components/AnimatedLoading.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "animated-loading",
-          "declaration": {
-            "name": "AnimatedLoading",
-            "module": "public/scripts/components/AnimatedLoading.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/components/MovieItem.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Renders a single movie as a linked poster card for use in movie lists.\n\nMovie data is supplied via the constructor rather than HTML attributes.\nThe element is intended to be created programmatically and appended to a\nlist item.\n\nUse it like this:\n```js\nimport { MovieItem } from '../components/MovieItem.js';\n\nconst li = document.createElement('li');\nli.appendChild(new MovieItem({\n  title: 'Inception',\n  poster_url: '/posters/inception.jpg',\n  release_year: 2010,\n}));\n```",
-          "name": "MovieItem",
-          "members": [
-            {
-              "kind": "field",
-              "name": "#movie",
-              "privacy": "private",
-              "default": "movie"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "movie-item",
-          "customElement": true,
-          "summary": "Movie poster card for list views"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "MovieItem",
-          "declaration": {
-            "name": "MovieItem",
-            "module": "public/scripts/components/MovieItem.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "movie-item",
-          "declaration": {
-            "name": "MovieItem",
-            "module": "public/scripts/components/MovieItem.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "public/scripts/components/YouTubeEmbed.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Embeds a responsive YouTube video player from a standard watch URL.\n\nWhen `data-url` is set to a non-empty YouTube watch URL, the element\nappends an iframe pointed at the corresponding embed URL.\n\nUse it like this:\n```html\n<youtube-embed data-url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"></youtube-embed>\n```\n\nThe URL may also be set programmatically via the `dataset` API:\n```js\nelement.dataset.url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';\n```",
-          "name": "YouTubeEmbed",
-          "attributes": [
-            {
-              "name": "data-url",
-              "type": {
-                "text": "string"
-              },
-              "description": "Full YouTube watch URL containing a `v=` video ID query parameter"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "youtube-embed",
-          "customElement": true,
-          "summary": "Embeds a YouTube video from a watch URL"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "YouTubeEmbed",
-          "declaration": {
-            "name": "YouTubeEmbed",
-            "module": "public/scripts/components/YouTubeEmbed.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "youtube-embed",
-          "declaration": {
-            "name": "YouTubeEmbed",
-            "module": "public/scripts/components/YouTubeEmbed.js"
           }
         }
       ]
@@ -1137,109 +1193,145 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/scripts/base/TemplateElement.js",
+      "path": "public/scripts/components/AnimatedLoading.js",
       "declarations": [
         {
           "kind": "class",
-          "description": "Base class for web components that load HTML templates from external files.\n\nSubclasses should define a static `TEMPLATE_PATH` property pointing to their\nHTML template file, and implement the `render()` method with component-specific logic.\nThe base class handles template loading, caching, and DOM injection via the\nconnectedCallback lifecycle.\n\nUse it like this:\n```js\nexport class MyElement extends TemplateElement {\n  static TEMPLATE_PATH = '/scripts/my-element.html';\n\n  async render() {\n    // Update DOM with data\n  }\n}\n\ncustomElements.define('my-element', MyElement);\n```",
-          "name": "TemplateElement",
-          "members": [
+          "description": "Renders one or more animated skeleton placeholder bars while content loads.\n\nOn connect, the element appends child `div` elements styled with the global\n`.loading-wave` CSS animation. Configuration is read from `data-*` attributes\nwhen the element is inserted into the DOM.\n\nUse it like this:\n```html\n<animated-loading data-elements=\"5\" data-width=\"150px\" data-height=\"220px\">\n</animated-loading>\n```",
+          "name": "AnimatedLoading",
+          "attributes": [
             {
-              "kind": "field",
-              "name": "_templatePromise",
-              "static": true,
-              "description": "Cached template promise, stored per subclass.\nPrevents redundant fetches of the same template file.",
               "type": {
-                "text": "Promise<HTMLTemplateElement>"
+                "text": "number"
               },
-              "privacy": "private"
+              "description": "Number of placeholder bars to render (default: 1)",
+              "name": "data-elements"
             },
             {
-              "kind": "method",
-              "name": "_loadTemplate",
-              "static": true,
-              "description": "Fetches and caches the HTML template file specified in TEMPLATE_PATH.\n\nThe template is fetched once per subclass and cached to improve performance\nwhen multiple instances of the same component are created. Subclasses must\ndefine a static `TEMPLATE_PATH` property.",
-              "return": {
-                "type": {
-                  "text": "Promise<HTMLTemplateElement>"
-                }
+              "type": {
+                "text": "string"
               },
-              "privacy": "private"
+              "description": "CSS width for each placeholder bar (default: 100px)",
+              "name": "data-width"
             },
             {
-              "kind": "method",
-              "name": "#initialize",
-              "privacy": "private",
-              "description": "Initializes the element by loading its template and calling render().\n\nCalled internally by connectedCallback. Handles template loading,\ncloning, and DOM insertion. If any error occurs, it logs the error\nbut does not throw, allowing the component to remain in the DOM.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "navigate",
-              "parameters": [
-                {
-                  "name": "route",
-                  "description": "Application route, optionally including a query string.",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "Requests a client-side navigation without importing the router.\n\nThe router listens for this document-level event and owns the actual\nhistory update and page transition.",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "render",
-              "description": "Hook for subclasses to render content after the template is loaded.\n\nCalled automatically after the template is appended to the DOM.\nSubclasses should override this method to fetch data, update DOM elements,\nand populate the template with content.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleError",
-              "parameters": [
-                {
-                  "name": "e",
-                  "description": "The error that occurred during initialization",
-                  "type": {
-                    "text": "Error"
-                  }
-                }
-              ],
-              "description": "Optional hook for handling initialization errors.\n\nOverride in subclasses to implement custom error handling, such as\ndisplaying user-friendly error messages or fallback UI.",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              }
+              "type": {
+                "text": "string"
+              },
+              "description": "CSS height for each placeholder bar (default: 10px)",
+              "name": "data-height"
             }
           ],
           "superclass": {
             "name": "HTMLElement"
           },
-          "summary": "Base class for template-loading custom elements",
-          "customElement": true
+          "tagName": "animated-loading",
+          "customElement": true,
+          "summary": "Animated skeleton loading placeholders"
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "TemplateElement",
+          "name": "AnimatedLoading",
           "declaration": {
-            "name": "TemplateElement",
-            "module": "public/scripts/base/TemplateElement.js"
+            "name": "AnimatedLoading",
+            "module": "public/scripts/components/AnimatedLoading.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "animated-loading",
+          "declaration": {
+            "name": "AnimatedLoading",
+            "module": "public/scripts/components/AnimatedLoading.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/components/MovieItem.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Renders a single movie as a linked poster card for use in movie lists.\n\nMovie data is supplied via the constructor rather than HTML attributes.\nThe element is intended to be created programmatically and appended to a\nlist item.\n\nUse it like this:\n```js\nimport { MovieItem } from '../components/MovieItem.js';\n\nconst li = document.createElement('li');\nli.appendChild(new MovieItem({\n  title: 'Inception',\n  poster_url: '/posters/inception.jpg',\n  release_year: 2010,\n}));\n```",
+          "name": "MovieItem",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#movie",
+              "privacy": "private",
+              "default": "movie"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "movie-item",
+          "customElement": true,
+          "summary": "Movie poster card for list views"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MovieItem",
+          "declaration": {
+            "name": "MovieItem",
+            "module": "public/scripts/components/MovieItem.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "movie-item",
+          "declaration": {
+            "name": "MovieItem",
+            "module": "public/scripts/components/MovieItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/scripts/components/YouTubeEmbed.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Embeds a responsive YouTube video player from a standard watch URL.\n\nWhen `data-url` is set to a non-empty YouTube watch URL, the element\nappends an iframe pointed at the corresponding embed URL.\n\nUse it like this:\n```html\n<youtube-embed data-url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"></youtube-embed>\n```\n\nThe URL may also be set programmatically via the `dataset` API:\n```js\nelement.dataset.url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';\n```",
+          "name": "YouTubeEmbed",
+          "attributes": [
+            {
+              "name": "data-url",
+              "type": {
+                "text": "string"
+              },
+              "description": "Full YouTube watch URL containing a `v=` video ID query parameter"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "youtube-embed",
+          "customElement": true,
+          "summary": "Embeds a YouTube video from a watch URL"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "YouTubeEmbed",
+          "declaration": {
+            "name": "YouTubeEmbed",
+            "module": "public/scripts/components/YouTubeEmbed.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "youtube-embed",
+          "declaration": {
+            "name": "YouTubeEmbed",
+            "module": "public/scripts/components/YouTubeEmbed.js"
           }
         }
       ]

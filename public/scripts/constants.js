@@ -89,3 +89,7 @@ export const HTTP_CODE = {
 export const STORAGE_KEYS = {
   JWT: 'jwt',
 };
+
+export const MIN_EMAIL_LENGTH = 4;
+export const MIN_NAME_LENGTH = 4;
+export const MIN_PASSWORD_LENGTH = 8;

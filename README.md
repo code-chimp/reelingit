@@ -69,38 +69,38 @@ added tooling the course does not cover:
 
 1. Start the local database:
 
-   ```
+   ```sh
    docker-compose up -d
    ```
 
 2. Create a `.env` file in the repo root:
 
-   ```
+   ```text
    DATABASE_URL=postgres://reelingit:reelingit@localhost:5432/reelingit?sslmode=disable
    PORT=:8080
    ```
 
 3. Seed the database (one-off; from the `import/` folder):
 
-   ```
+   ```sh
    cd import && go run install.go
    ```
 
 4. Run the server:
 
-   ```
+   ```sh
    go run ./cmd/main.go
    ```
 
    or with hot reload (macOS/Linux):
 
-   ```
+   ```sh
    air
    ```
 
    On Windows, use the dedicated config, which builds a `.exe` binary:
 
-   ```
+   ```sh
    air -c .air.win.toml
    ```
 
@@ -109,7 +109,7 @@ served directly from `public/` — no bundler, no build step.
 
 ### Frontend tooling
 
-```
+```sh
 npm run lint          # prettier --check + stylelint
 npm run fix:format    # prettier --write ./public
 npm run fix:styles    # stylelint --fix
@@ -118,7 +118,7 @@ npm run manifest:gen  # regenerate custom-elements.json
 
 ## Project structure
 
-```
+```text
 cmd/main.go            server wiring: config, routes, SPA fallback
 internal/
   handlers/            HTTP handlers (movies, account/auth)
