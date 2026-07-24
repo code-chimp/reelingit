@@ -51,8 +51,9 @@ export default defineConfig([
   },
   // configuration and utility files
   {
-    files: ['*.config.{js,mjs}', 'vitest.setup.js'],
+    files: ['*.config.{js,mjs}', 'scripts/**/*.js', 'vitest.setup.js'],
     languageOptions: { globals: { ...globals.node } },
+    rules: { 'no-console': 'off' },
   },
   // watch html for obvious a11y deficiencies
   {
@@ -60,6 +61,7 @@ export default defineConfig([
     files: ['**/*.html'],
     plugins: { '@html-eslint': html },
     languageOptions: { parser: htmlParser },
+    // do not fight Prettier
     rules: {
       '@html-eslint/indent': 'off',
       '@html-eslint/quotes': 'off',

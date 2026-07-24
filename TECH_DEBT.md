@@ -120,17 +120,17 @@ frontend, and Playwright end-to-end tests covering critical user flows.
 
 ## Frontend unit tests (Vitest)
 
-- [ ] Add Vitest as a dev dependency alongside the existing Vite build setup
-- [ ] Test `services/Router.js` route matching (string and RegExp routes,
+- [x] Add Vitest as a dev dependency alongside the existing Vite build setup
+- [x] Test `services/Router.js` route matching (string and RegExp routes,
       capture groups, not-found fallback)
-- [ ] Test `services/API.js` (`fetch`/`post` error swallowing, query string
+- [x] Test `services/API.js` (`fetch`/`post` error swallowing, query string
       building, each endpoint method)
-- [ ] Test `services/Store.js` (localStorage persistence, `loggedIn` getter)
-- [ ] Test `base/TemplateElement.js` lifecycle (template caching, render
+- [x] Test `services/Store.js` (localStorage persistence, `loggedIn` getter)
+- [x] Test `base/TemplateElement.js` lifecycle (template caching, render
       hook, `handleError`)
-- [ ] Test form validation logic in `pages/RegisterPage.js` and
+- [x] Test form validation logic in `pages/RegisterPage.js` and
       `pages/LoginPage.js`
-- [ ] Wire `npm test` (currently a stub) to run Vitest in CI
+- [x] Wire `npm test` (currently a stub) to run Vitest in CI
 
 ## End-to-end tests (Playwright)
 

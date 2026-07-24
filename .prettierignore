@@ -1,3 +1,4 @@
+coverage/**
 public/**/*.css
 README.md
-
+*.yml

@@ -1,6 +1,7 @@
 {
   "extends": ["stylelint-config-recommended"],
   "plugins": ["stylelint-no-unsupported-browser-features"],
+  "ignoreFiles": ["public/**"],
   "rules": {
     "at-rule-no-deprecated": [true, { "ignoreAtRules": ["apply"] }],
     "block-no-empty": null,

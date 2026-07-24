@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+changedFiles="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+[ -z "$changedFiles" ] && exit 0
+
+echo "$changedFiles" | tr -d '\r' | xargs node scripts/notify-lockfile-changed.js

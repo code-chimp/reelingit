@@ -3,6 +3,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 /** @type {import('vite').UserConfig} */
 export default {
   root: 'public',
+  cacheDir: '../node_modules/.vite',
   build: {
     outDir: '../dist/public',
     emptyOutDir: true,
@@ -25,7 +26,14 @@ export default {
   test: {
     globals: true,
     environment: 'jsdom',
+    fileParallelism: false,
     setupFiles: ['./vitest.setup.js'],
     include: ['**/*.test.js'],
+    exclude: ['e2e/**'],
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: './test-results/junit.xml',
+    },
+    css: false, // disable CSS processing to quiet warnings
   },
 };
