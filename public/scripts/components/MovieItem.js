@@ -1,6 +1,11 @@
 import { ROUTES } from '../constants.js';
 
 /**
+ * @typedef {import('../types.js').Movie} Movie
+ * @typedef {Pick<Movie, 'id'|'title'|'poster_url'|'release_year'>} MovieCardData
+ */
+
+/**
  * Renders a single movie as a linked poster card for use in movie lists.
  *
  * Movie data is supplied via the constructor rather than HTML attributes.
@@ -24,10 +29,11 @@ import { ROUTES } from '../constants.js';
  * @tagname movie-item
  */
 export class MovieItem extends HTMLElement {
+  /** @type {MovieCardData} */
   #movie;
 
   /**
-   * @param {{ id: number|string, title: string, poster_url: string, release_year: number }} movie - Movie data from the API
+   * @param {MovieCardData} movie - Movie data from the API
    */
   constructor(movie) {
     super();

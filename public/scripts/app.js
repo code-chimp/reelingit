@@ -20,7 +20,9 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#search-form').addEventListener('submit', e => {
     e.preventDefault();
 
-    const q = document.querySelector('input[type=search]').value;
+    /** @type {HTMLInputElement | null} */
+    const searchInput = document.querySelector('input[type=search]');
+    const q = searchInput?.value ?? '';
     const search = new URLSearchParams({
       q,
     });

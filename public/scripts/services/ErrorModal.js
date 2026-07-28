@@ -8,9 +8,13 @@ import { CUSTOM_EVENTS, ROUTES } from '../constants.js';
  * @returns {void}
  */
 export function showErrorModal(message = 'Sorry, there was an error.', goToHome = true) {
+  /** @type {HTMLDialogElement | null} */
   const modal = document.querySelector('#alert-modal');
-  modal.querySelector('p').textContent = message;
-  modal.showModal();
+  const body = modal?.querySelector('p');
+  if (body) {
+    body.textContent = message;
+  }
+  modal?.showModal();
   if (goToHome) {
     // The router owns navigation; the modal only emits the intent.
     document.dispatchEvent(
@@ -29,5 +33,7 @@ export function showErrorModal(message = 'Sorry, there was an error.', goToHome 
  * @returns {void}
  */
 export function closeErrorModal() {
-  document.querySelector('#alert-modal').close();
+  /** @type {HTMLDialogElement | null} */
+  const modal = document.querySelector('#alert-modal');
+  modal?.close();
 }

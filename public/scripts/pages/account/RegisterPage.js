@@ -44,9 +44,14 @@ export class RegisterPage extends TemplateElement {
    */
   async #handleSubmit(e) {
     e.preventDefault();
-    const { name, email, password, passwordConfirm } = Object.fromEntries(
-      new FormData(e.target),
-    );
+    if (!(e.target instanceof HTMLFormElement)) {
+      return;
+    }
+    const formData = Object.fromEntries(new FormData(e.target));
+    const name = /** @type {string} */ (formData.name);
+    const email = /** @type {string} */ (formData.email);
+    const password = /** @type {string} */ (formData.password);
+    const passwordConfirm = /** @type {string} */ (formData.passwordConfirm);
     const errors = [];
 
     if (name.length < MIN_NAME_LENGTH) {

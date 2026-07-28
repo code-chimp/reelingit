@@ -25,11 +25,19 @@ import { CUSTOM_EVENTS } from '../constants.js';
  */
 export class TemplateElement extends HTMLElement {
   /**
+   * Path to this subclass's HTML template file. Must be defined by every
+   * subclass; the base class only declares it here so `this.TEMPLATE_PATH`
+   * type-checks inside static methods.
+   * @type {string}
+   * @static
+   */
+  static TEMPLATE_PATH;
+
+  /**
    * Cached template promise, stored per subclass.
    * Prevents redundant fetches of the same template file.
-   * @type {Promise<HTMLTemplateElement>}
+   * @type {Promise<HTMLTemplateElement>|null}
    * @static
-   * @private
    */
   static _templatePromise;
 
@@ -43,7 +51,6 @@ export class TemplateElement extends HTMLElement {
    * @returns {Promise<HTMLTemplateElement>} The parsed template element
    * @throws {Error} If the template file fails to load or parse
    * @static
-   * @private
    */
   static _loadTemplate() {
     // `this` is the subclass (called via `this.constructor._loadTemplate()`),
@@ -84,11 +91,12 @@ export class TemplateElement extends HTMLElement {
    * but does not throw, allowing the component to remain in the DOM.
    *
    * @returns {Promise<void>}
-   * @private
    */
   async #initialize() {
     try {
-      const template = await this.constructor._loadTemplate();
+      const template = await /** @type {typeof TemplateElement} */ (
+        this.constructor
+      )._loadTemplate();
       const content = template.content.cloneNode(true);
       this.appendChild(content);
       await this.render();

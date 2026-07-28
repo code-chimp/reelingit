@@ -1,7 +1,7 @@
+import { defineConfig } from 'vitest/config';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-/** @type {import('vite').UserConfig} */
-export default {
+export default defineConfig({
   root: 'public',
   cacheDir: '../node_modules/.vite',
   build: {
@@ -20,6 +20,8 @@ export default {
           src: ['images/*', '!images/logo.png', '!images/.DS_Store'],
           dest: '.',
         },
+        { src: 'robots.txt', dest: '.' },
+        { src: '.well-known/security.txt', dest: '.' },
       ],
     }),
   ],
@@ -36,4 +38,4 @@ export default {
     },
     css: false, // disable CSS processing to quiet warnings
   },
-};
+});

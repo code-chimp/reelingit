@@ -33,6 +33,13 @@ import Store from '../services/Store.js';
 export class MovieDetailsPage extends TemplateElement {
   static TEMPLATE_PATH = '/scripts/pages/movie-details-page.html';
 
+  /**
+   * Route capture groups, set by `Router` before this element is connected.
+   * `params[0]` is the movie ID.
+   * @type {string[]}
+   */
+  params = [];
+
   #movie;
 
   /**
@@ -93,7 +100,12 @@ export class MovieDetailsPage extends TemplateElement {
       this.querySelector('h2').textContent = this.#movie.title;
       this.querySelector('h3').textContent = this.#movie.tagline;
       this.querySelector('img').src = this.#movie.poster_url;
-      this.querySelector('#trailer').dataset.url = this.#movie.trailer_url;
+
+      /** @type {HTMLElement | null} */
+      const trailerEl = this.querySelector('#trailer');
+      if (trailerEl) {
+        trailerEl.dataset.url = this.#movie.trailer_url;
+      }
 
       // metadata definition list
       const metaDataDL = this.querySelector('#metadata');

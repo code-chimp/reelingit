@@ -1,8 +1,12 @@
 import { TemplateElement } from '../base/TemplateElement.js';
-import { ROUTES } from '../constants.js';
 import { MovieItem } from '../components/MovieItem.js';
+import { ROUTES } from '../constants.js';
 import { API } from '../services/API.js';
 import { showErrorModal } from '../services/ErrorModal.js';
+
+/**
+ * @typedef {import('../types.js').Genre} Genre
+ */
 
 /**
  * Movie search/listing screen. Reads `q`, `order`, and `genre` from the
@@ -22,7 +26,7 @@ export class MoviesPage extends TemplateElement {
    * field because router navigation constructs a new instance on every
    * navigation to `/movies`.
    *
-   * @type {Array<object>}
+   * @type {Genre[]}
    */
   static #genres = [];
   #query = '';
@@ -45,18 +49,21 @@ export class MoviesPage extends TemplateElement {
       }
     }
 
+    /** @type {HTMLSelectElement | null} */
     const filterSelect = this.querySelector('select#filter');
-    filterSelect.innerHTML = '';
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = 'All Genres';
-    filterSelect.appendChild(defaultOption);
+    if (filterSelect) {
+      filterSelect.innerHTML = '';
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'All Genres';
+      filterSelect.appendChild(defaultOption);
+    }
 
     MoviesPage.#genres.forEach(genre => {
       const option = document.createElement('option');
-      option.value = genre.id;
+      option.value = String(genre.id);
       option.textContent = genre.name;
-      filterSelect.appendChild(option);
+      filterSelect?.appendChild(option);
     });
   }
 
@@ -95,37 +102,41 @@ export class MoviesPage extends TemplateElement {
     const movies = await API.searchMovies(this.#query, this.#order, this.#genre);
     await this.#loadGenres();
 
+    /** @type {HTMLUListElement | null} */
     const moviesList = this.querySelector('ul');
-    moviesList.innerHTML = '';
+    if (moviesList) {
+      moviesList.innerHTML = '';
+    }
 
     if (movies && movies.length > 0) {
       movies.forEach(movie => {
         const li = document.createElement('li');
         li.appendChild(new MovieItem(movie));
-        moviesList.appendChild(li);
+        moviesList && moviesList.appendChild(li);
       });
     } else {
       const notFoundError = document.createElement('h3');
       notFoundError.textContent = `Could not find movies with the search term: ${this.#query}`;
       const li = document.createElement('li');
       li.appendChild(notFoundError);
-      moviesList.appendChild(li);
+      moviesList && moviesList.appendChild(li);
     }
 
-    if (this.#genre) {
-      this.querySelector('select#filter').value = this.#genre;
+    /** @type {HTMLSelectElement | null} */
+    const genreSelect = this.querySelector('select#filter');
+    /** @type {HTMLSelectElement | null} */
+    const orderSelect = this.querySelector('select#order');
+
+    if (this.#genre && genreSelect) {
+      genreSelect.value = this.#genre;
     }
 
-    if (this.#order) {
-      this.querySelector('select#order').value = this.#order;
+    if (this.#order && orderSelect) {
+      orderSelect.value = this.#order;
     }
 
-    this.querySelector('select#filter').addEventListener('change', e =>
-      this.#handleFilterChange(e),
-    );
-    this.querySelector('select#order').addEventListener('change', e =>
-      this.#handleOrderChange(e),
-    );
+    genreSelect && genreSelect.addEventListener('change', e => this.#handleFilterChange(e));
+    orderSelect && orderSelect.addEventListener('change', e => this.#handleOrderChange(e));
   }
 
   /**
@@ -137,6 +148,9 @@ export class MoviesPage extends TemplateElement {
    * @returns {void}
    */
   #handleFilterChange(e) {
+    if (!(e.target instanceof HTMLSelectElement)) {
+      return;
+    }
     const search = new URLSearchParams({
       q: this.#query,
       genre: e.target.value,
@@ -155,6 +169,9 @@ export class MoviesPage extends TemplateElement {
    * @returns {void}
    */
   #handleOrderChange(e) {
+    if (!(e.target instanceof HTMLSelectElement)) {
+      return;
+    }
     const search = new URLSearchParams({
       q: this.#query,
       genre: this.#genre,

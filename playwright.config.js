@@ -2,18 +2,25 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Read environment variables from .env so tests and the webServer share
+ * config with the Go server (see cmd/main.go). Node's built-in loader is
+ * a no-op if .env doesn't exist, matching godotenv.Load()'s fallback to
+ * real environment variables.
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+process.loadEnvFile?.(new URL('.env', import.meta.url));
+
+// cmd/main.go's PORT is a Go net/http addr (e.g. ":8080"); strip the
+// leading colon to build a URL.
+const port = (process.env.PORT || ':8080').replace(/^:/, '');
+const baseURL = `http://localhost:${port}`;
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
   testDir: './e2e',
+  /* Only *.spec.js are e2e tests; *.test.js is reserved for vitest unit tests. */
+  testMatch: '**/*.spec.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -27,7 +34,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -49,32 +56,17 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  /* Bring up Postgres and the air-managed Go server before running tests.
+   * If `air` is already running on baseURL, Playwright reuses it instead
+   * of starting a second instance (see reuseExistingServer below); either
+   * way, cmd/main.go's own db.Ping()-and-exit on startup means a down
+   * database surfaces as a clear webServer timeout rather than passing
+   * silently. */
+  webServer: {
+    command: 'docker-compose up -d && air',
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
+  },
 });

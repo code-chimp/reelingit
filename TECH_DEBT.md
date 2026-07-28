@@ -134,13 +134,13 @@ frontend, and Playwright end-to-end tests covering critical user flows.
 
 ## End-to-end tests (Playwright)
 
-- [ ] Add Playwright and a baseline config pointed at the local dev server
+- [x] Add Playwright and a baseline config pointed at the local dev server
 - [ ] Cover the register → login → account golden path
 - [ ] Cover movie search, genre filter, and sort order on the movies screen
 - [ ] Cover adding/removing a movie from favorites and watchlist
 - [ ] Cover deep-link navigation (hard refresh on a client-side route, e.g.
       `/movies/90`)
-- [ ] Wire Playwright into CI (headless, against a built/served app)
+- [ ] ~~Wire Playwright into CI (headless, against a built/served app)~~ (CI is out of scope)
 
 ## What is testcontainers?
 

@@ -6,12 +6,17 @@ vi.mock('./Store.js', () => ({ default: mockStore }));
 import { API } from './API.js';
 
 // Minimal Response-like object for stubbing globalThis.fetch
+/**
+ * @param {number} status
+ * @param {object} body
+ * @returns {Response}
+ */
 function makeResponse(status, body) {
-  return {
+  return /** @type {Response} */ ({
     status,
     ok: status >= 200 && status < 300,
     json: () => Promise.resolve(body),
-  };
+  });
 }
 
 describe('services/API', () => {

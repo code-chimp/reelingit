@@ -1,6 +1,12 @@
 # OS
 .DS_Store
 
+# AI coding assistant local project settings
+.claude/
+.codes/
+.cursor/
+.opencode/
+
 # Editors and IDEs
 .vscode/*
 !.vscode/.gitattributes
@@ -13,6 +19,7 @@
 # Environment and secrets
 .env
 .env.*
+!.env.sample
 
 # Go build and test outputs
 bin/

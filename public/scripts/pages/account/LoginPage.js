@@ -39,7 +39,12 @@ export class LoginPage extends TemplateElement {
    */
   async #handleSubmit(e) {
     e.preventDefault();
-    const { email, password } = Object.fromEntries(new FormData(e.target));
+    if (!(e.target instanceof HTMLFormElement)) {
+      return;
+    }
+    const formData = Object.fromEntries(new FormData(e.target));
+    const email = /** @type {string} */ (formData.email);
+    const password = /** @type {string} */ (formData.password);
     const errors = [];
 
     if (email.length < MIN_EMAIL_LENGTH) {

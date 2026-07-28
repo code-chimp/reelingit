@@ -31,7 +31,7 @@ export class AnimatedLoading extends HTMLElement {
    * @returns {void}
    */
   connectedCallback() {
-    const qty = this.dataset.elements ?? 1;
+    const qty = Number(this.dataset.elements ?? 1);
     const width = this.dataset.width ?? '100px';
     const height = this.dataset.height ?? '10px';
     for (let i = 0; i < qty; i++) {

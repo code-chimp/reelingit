@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vitest/globals"],
+    "noEmit": true
+  },
+  "include": ["public/**/*.js", "e2e/**/*.js", "scripts/**/*.js", "*.js", "*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "public/coverage",
+    "coverage",
+    "playwright-report",
+    "test-results"
+  ]
+}

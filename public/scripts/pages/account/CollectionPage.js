@@ -3,6 +3,10 @@ import { MovieItem } from '../../components/MovieItem.js';
 import { ROUTES } from '../../constants.js';
 
 /**
+ * @typedef {import('../../types.js').MovieList} MovieList
+ */
+
+/**
  * Generic screen for listing a named collection of movies (e.g. favorites
  * or watchlist), fetched via a caller-supplied endpoint.
  *
@@ -30,7 +34,7 @@ export class CollectionPage extends TemplateElement {
   #title;
 
   /**
-   * @param {() => Promise<Array<object>|undefined>} endpoint - Called on render to fetch the collection's movies
+   * @param {() => Promise<MovieList>} endpoint - Called on render to fetch the collection's movies
    * @param {string} title - Heading text to display above the movie list
    */
   constructor(endpoint, title) {

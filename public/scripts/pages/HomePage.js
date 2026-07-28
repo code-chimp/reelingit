@@ -1,6 +1,10 @@
 import { TemplateElement } from '../base/TemplateElement.js';
-import { API } from '../services/API.js';
 import { MovieItem } from '../components/MovieItem.js';
+import { API } from '../services/API.js';
+
+/**
+ * @typedef {import('../types.js').MovieList} MovieList
+ */
 
 /**
  * Home screen showing this week's top movies and a random selection.
@@ -27,11 +31,15 @@ export class HomePage extends TemplateElement {
   /**
    * Replaces a movie list's contents with linked movie cards.
    *
-   * @param {Array<object>} movies - Movies to render.
-   * @param {HTMLUListElement} ul - List element receiving the cards.
+   * @param {MovieList} movies - Movies to render.
+   * @param {HTMLUListElement | null} ul - List element receiving the cards.
    * @returns {void}
    */
   #renderMoviesToList(movies, ul) {
+    if (!ul) {
+      return;
+    }
+
     ul.innerHTML = '';
     movies.forEach(movie => {
       const li = document.createElement('li');
@@ -49,6 +57,7 @@ export class HomePage extends TemplateElement {
     try {
       const getTopMovies = API.getTopMovies();
       const getRandomMovies = API.getRandomMovies();
+      /** @type {[MovieList, MovieList]} */
       const [topMovies, randomMovies] = await Promise.all([getTopMovies, getRandomMovies]);
 
       this.#renderMoviesToList(topMovies, this.querySelector('#top-10 ul'));

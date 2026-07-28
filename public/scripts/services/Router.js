@@ -1,5 +1,5 @@
-import { routes } from './routes.js';
 import { CUSTOM_EVENTS, ROUTES } from '../constants.js';
+import { routes } from './routes.js';
 import Store from './Store.js';
 
 /**
@@ -41,6 +41,9 @@ export const Router = {
     });
 
     document.addEventListener('click', e => {
+      if (!(e.target instanceof Element)) {
+        return;
+      }
       const anchor = e.target.closest('a.navlink');
       if (!anchor) {
         return;
@@ -51,7 +54,9 @@ export const Router = {
     });
 
     document.addEventListener(CUSTOM_EVENTS.NAVIGATE, e => {
-      Router.go(e.detail.route);
+      if (e instanceof CustomEvent) {
+        Router.go(e.detail.route);
+      }
     });
 
     // go to the initial route
@@ -89,7 +94,8 @@ export const Router = {
         if (match) {
           pageTitle = r.pageTitle;
           screenElement = new r.component();
-          screenElement.params = match.slice(1);
+          /** @type {HTMLElement & { params?: string[] }} */ (screenElement).params =
+            match.slice(1);
           protectedRoute = r.protected ?? false;
           break;
         }

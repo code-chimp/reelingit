@@ -1,5 +1,28 @@
-import Store from './Store.js';
 import { CUSTOM_EVENTS, HTTP_CODE, ROUTES } from '../constants.js';
+import Store from './Store.js';
+
+/**
+ * @typedef {import('../types.js').AuthResult} AuthResult
+ * @typedef {import('../types.js').ErrorEnvelope} ErrorEnvelope
+ * @typedef {import('../types.js').Genre} Genre
+ * @typedef {import('../types.js').Movie} Movie
+ * @typedef {import('../types.js').MovieList} MovieList
+ */
+
+/**
+ * An `Error` carrying the HTTP status code of the response that caused it.
+ */
+class APIError extends Error {
+  /**
+   * @param {string} message
+   * @param {number} status
+   */
+  constructor(message, status) {
+    super(message);
+    this.name = 'APIError';
+    this.status = status;
+  }
+}
 
 /**
  * Client for the ReelingIt backend's `/api/` movie endpoints.
@@ -43,10 +66,9 @@ export const API = {
     }
 
     if (!response.ok) {
+      /** @type {Partial<ErrorEnvelope>} */
       const body = await response.json().catch(() => ({}));
-      const error = new Error(body.error ?? 'Request failed');
-      error.status = response.status;
-      throw error;
+      throw new APIError(body.error ?? 'Request failed', response.status);
     }
 
     return await response.json();
@@ -110,14 +132,14 @@ export const API = {
   },
 
   /**
-   * @returns {Promise<Array<object>>} This week's top movies.
+   * @returns {Promise<MovieList>} This week's top movies.
    */
   getTopMovies: async () => {
     return await API.fetch('movies/top');
   },
 
   /**
-   * @returns {Promise<Array<object>>} A random selection of movies.
+   * @returns {Promise<MovieList>} A random selection of movies.
    */
   getRandomMovies: async () => {
     return await API.fetch('movies/random');
@@ -125,7 +147,7 @@ export const API = {
 
   /**
    * @param {number|string} id - Movie ID
-   * @returns {Promise<object>} The movie matching `id`.
+   * @returns {Promise<Movie>} The movie matching `id`.
    */
   getMovieById: async id => {
     return await API.fetch(`movies/${id}`);
@@ -135,14 +157,14 @@ export const API = {
    * @param {string} q - Search text
    * @param {string} [order] - Sort order
    * @param {string} [genre] - Genre filter
-   * @returns {Promise<Array<object>>} Movies matching the search criteria.
+   * @returns {Promise<MovieList>} Movies matching the search criteria.
    */
-  searchMovies: async (q, order, genre) => {
+  searchMovies: async (q, order = '', genre = '') => {
     return await API.fetch(`movies/search`, { q, order, genre });
   },
 
   /**
-   * @returns {Promise<Array<object>>} All genres.
+   * @returns {Promise<Genre[]>} All genres.
    */
   getGenres: async () => {
     return await API.fetch('genres');
@@ -154,7 +176,7 @@ export const API = {
    * @param {string} name - Display name
    * @param {string} email - Account email, used as the login identifier
    * @param {string} password - Plaintext password; hashed server-side
-   * @returns {Promise<{success: boolean, message: string, jwt: string}>}
+   * @returns {Promise<AuthResult>}
    *   Auth result. On success `jwt` is a signed token to store for
    *   subsequent authenticated requests; on failure `success` is `false`
    *   and `message` explains why (e.g. duplicate email).
@@ -168,7 +190,7 @@ export const API = {
    *
    * @param {string} email - Account email
    * @param {string} password - Plaintext password, checked against the stored hash
-   * @returns {Promise<{success: boolean, message: string, jwt: string}>}
+   * @returns {Promise<AuthResult>}
    *   Auth result. On success `jwt` is a signed token to store for
    *   subsequent authenticated requests; on failure `success` is `false`
    *   and `message` explains why (e.g. invalid credentials).
@@ -182,7 +204,7 @@ export const API = {
    * `GET /api/account/favorites`. Requires an authenticated session (a JWT
    * in `Store.jwt`), since the backend derives the user from it.
    *
-   * @returns {Promise<Array<object>>} The user's favorited movies.
+   * @returns {Promise<MovieList>} The user's favorited movies.
    */
   getFavorites: async () => {
     return await API.fetch('account/favorites');
@@ -193,7 +215,7 @@ export const API = {
    * `GET /api/account/watchlist`. Requires an authenticated session (a JWT
    * in `Store.jwt`), since the backend derives the user from it.
    *
-   * @returns {Promise<Array<object>>} The user's watchlisted movies.
+   * @returns {Promise<MovieList>} The user's watchlisted movies.
    */
   getWatchlist: async () => {
     return await API.fetch('account/watchlist');
@@ -206,7 +228,7 @@ export const API = {
    *
    * @param {number|string} movie_id - ID of the movie to save
    * @param {string} collection - Target collection, one of `COLLECTIONS`'s values
-   * @returns {Promise<{success: boolean, message: string}>} Save result.
+   * @returns {Promise<AuthResult>} Save result.
    */
   saveToCollection: async (movie_id, collection) => {
     return await API.post('account/save-to-collection', { movie_id, collection });

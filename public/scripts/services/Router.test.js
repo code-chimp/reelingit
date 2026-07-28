@@ -1,46 +1,43 @@
 import { ROUTES } from '../constants.js';
 
-// vi.mock factories are hoisted before class declarations, so stub components
-// must be defined inside the factory. They are re-exported so the tests can
-// use them in instanceof assertions.
-vi.mock('./routes.js', () => {
+// Stub components live in a vi.hoisted block so both the vi.mock factory
+// below and the test assertions can reference the same classes — importing
+// them from './routes.js' would resolve against the real (unmocked-at-type-
+// check-time) module, which doesn't export them.
+const { StubHome, StubMovies, StubMovieDetails, StubProtected, StubLogin } = vi.hoisted(() => {
   class StubHome extends HTMLElement {}
   class StubMovies extends HTMLElement {}
   class StubMovieDetails extends HTMLElement {}
   class StubProtected extends HTMLElement {}
   class StubLogin extends HTMLElement {}
 
-  return {
-    StubHome,
-    StubMovies,
-    StubMovieDetails,
-    StubProtected,
-    StubLogin,
-    routes: [
-      { path: '/', pageTitle: 'Home', component: StubHome, protected: false },
-      { path: '/movies', pageTitle: 'Movies', component: StubMovies, protected: false },
-      {
-        path: /\/movies\/(\d+)/,
-        pageTitle: 'Movie Details',
-        component: StubMovieDetails,
-        protected: false,
-      },
-      { path: '/account/login', pageTitle: 'Sign In', component: StubLogin, protected: false },
-      {
-        path: '/protected',
-        pageTitle: 'Protected',
-        component: StubProtected,
-        protected: true,
-      },
-    ],
-  };
+  return { StubHome, StubMovies, StubMovieDetails, StubProtected, StubLogin };
 });
+
+vi.mock('./routes.js', () => ({
+  routes: [
+    { path: '/', pageTitle: 'Home', component: StubHome, protected: false },
+    { path: '/movies', pageTitle: 'Movies', component: StubMovies, protected: false },
+    {
+      path: /\/movies\/(\d+)/,
+      pageTitle: 'Movie Details',
+      component: StubMovieDetails,
+      protected: false,
+    },
+    { path: '/account/login', pageTitle: 'Sign In', component: StubLogin, protected: false },
+    {
+      path: '/protected',
+      pageTitle: 'Protected',
+      component: StubProtected,
+      protected: true,
+    },
+  ],
+}));
 
 const mockStore = vi.hoisted(() => ({ loggedIn: false }));
 vi.mock('./Store.js', () => ({ default: mockStore }));
 
 import { Router } from './Router.js';
-import { StubHome, StubLogin, StubMovieDetails, StubMovies, StubProtected } from './routes.js';
 
 // jsdom requires custom element classes to be in the registry before `new` is called.
 customElements.define('stub-home', StubHome);
