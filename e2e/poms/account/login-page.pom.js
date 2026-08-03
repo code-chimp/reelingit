@@ -1,18 +1,26 @@
 import { ROUTES } from '../../constants.js';
 
 /**
+ * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
  * Page object model for the /account/login screen.
  */
 export default class LoginPagePom {
-  /** @type {import('@playwright/test').Page} */
+  /** @type {Page} */
   #page;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
+  root;
+
+  /** @type {Locator} */
   emailInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   passwordInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   loginButton;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   registerLink;
 
   /**
@@ -20,11 +28,12 @@ export default class LoginPagePom {
    */
   constructor(page) {
     this.#page = page;
+    this.root = page.locator('login-page');
 
-    this.emailInput = page.getByLabel('Email');
-    this.passwordInput = page.getByLabel('Password');
-    this.loginButton = page.getByRole('button', { name: 'Log In' });
-    this.registerLink = page.getByRole('link', { name: 'register' });
+    this.emailInput = this.root.getByLabel('Email');
+    this.passwordInput = this.root.getByLabel('Password');
+    this.loginButton = this.root.getByRole('button', { name: 'Log In' });
+    this.registerLink = this.root.getByRole('link', { name: 'register' });
   }
 
   /**

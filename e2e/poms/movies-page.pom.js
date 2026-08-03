@@ -1,17 +1,26 @@
 import { ROUTES } from '../constants.js';
 
 /**
+ * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
  * Page object model for the /movies screen.
  */
 export default class MoviesPagePom {
-  /** @type {import('@playwright/test').Page} */
+  /** @type {Page} */
   #page;
 
+  /** @type {Locator} */
+  root;
+
   /**
-   * @param {import('@playwright/test').Page} page
+   * @param {Page} page
    */
   constructor(page) {
     this.#page = page;
+    this.root = page.locator('movie-page');
   }
 
   /**

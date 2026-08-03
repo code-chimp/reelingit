@@ -49,6 +49,13 @@ export default defineConfig([
       'vitest/max-nested-describe': ['error', { max: 3 }],
     },
   },
+  // Playwright E2E tests
+  {
+    files: ['**/*.spec.js'],
+    rules: {
+      'no-magic-numbers': 'off',
+    },
+  },
   // configuration and utility files
   {
     files: ['*.config.{js,mjs}', 'scripts/**/*.js', 'vitest.setup.js'],

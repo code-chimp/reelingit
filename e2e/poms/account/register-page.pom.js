@@ -1,22 +1,30 @@
 import { ROUTES } from '../../constants.js';
 
 /**
+ * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
  * Page object model for the /account/register screen.
  */
 export default class RegisterPagePom {
-  /** @type {import('@playwright/test').Page} */
+  /** @type {Page} */
   #page;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
+
+  root;
+  /** @type {Locator} */
   nameInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   emailInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   passwordInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   confirmPasswordInput;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   registerButton;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   loginLink;
 
   /**
@@ -24,13 +32,14 @@ export default class RegisterPagePom {
    */
   constructor(page) {
     this.#page = page;
+    this.root = page.locator('register-page');
 
-    this.nameInput = page.getByLabel('Name');
-    this.emailInput = page.getByLabel('Email');
-    this.passwordInput = page.getByLabel('Password');
-    this.confirmPasswordInput = page.getByLabel('Confirm Password');
-    this.registerButton = page.getByRole('button', { name: 'Register' });
-    this.loginLink = page.getByRole('link', { name: 'login' });
+    this.nameInput = this.root.getByLabel('Name');
+    this.emailInput = this.root.getByLabel('Email');
+    this.passwordInput = this.root.getByLabel('Password');
+    this.confirmPasswordInput = this.root.getByLabel('Confirm Password');
+    this.registerButton = this.root.getByRole('button', { name: 'Register' });
+    this.loginLink = this.root.getByRole('link', { name: 'login' });
   }
 
   /**

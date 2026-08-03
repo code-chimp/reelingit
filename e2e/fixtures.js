@@ -14,8 +14,8 @@ import MovieDetailsPagePom from './poms/movie-details-page.pom.js';
  * argument. Import `test`/`expect` from here instead of `@playwright/test`
  * to get access to these.
  *
- * @type {import('@playwright/test').TestType<
- *   import('@playwright/test').PlaywrightTestArgs & {
+ * @type {import('@playwright/test').Fixtures<
+ *   {
  *     homePage: HomePagePom,
  *     moviesPage: MoviesPagePom,
  *     movieDetailsPage: MovieDetailsPagePom,
@@ -25,10 +25,12 @@ import MovieDetailsPagePom from './poms/movie-details-page.pom.js';
  *     registerPage: RegisterPagePom,
  *     watchlistPage: WatchlistPagePom,
  *   },
+ *   {},
+ *   import('@playwright/test').PlaywrightTestArgs,
  *   import('@playwright/test').PlaywrightWorkerArgs
  * >}
  */
-export const test = base.extend({
+const fixtures = {
   homePage: async ({ page }, use) => {
     await use(new HomePagePom(page));
   },
@@ -54,6 +56,8 @@ export const test = base.extend({
   watchlistPage: async ({ page }, use) => {
     await use(new WatchlistPagePom(page));
   },
-});
+};
+
+export const test = base.extend(fixtures);
 
 export { expect };

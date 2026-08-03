@@ -40,3 +40,9 @@ export const TEST_USER = {
   email: 'testy@example.com',
   password: 's00p3r*s3kr1t',
 };
+
+export const BIG_HERO_SIX_MOVIE_ID = 84;
+export const CAPT_AMERICA_MOVIE_ID = 165;
+export const DEAD_MAN_ON_CAMPUS_MOVIE_ID = 2686;
+export const DEADPOOL_MOVIE_ID = 784;
+export const GUARDIANS_OF_THE_GALAXY_MOVIE_ID = 90;

@@ -27,5 +27,6 @@
     "tmp/": true,
     "dist/": true
   },
-  "makefile.configureOnOpen": false
+  "makefile.configureOnOpen": false,
+  "cSpell.words": ["navlink", "Watchlist"]
 }

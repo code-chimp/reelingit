@@ -1,16 +1,24 @@
 import { ROUTES } from '../../constants.js';
 
 /**
+ * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
  * Page object model for the /account screen.
  */
 export default class AccountPagePom {
-  /** @type {import('@playwright/test').Page} */
+  /** @type {Page} */
   #page;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
+  root;
+
+  /** @type {Locator} */
   logoutButton;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   favoritesButton;
-  /** @type {import('@playwright/test').Locator} */
+  /** @type {Locator} */
   watchlistButton;
 
   /**
@@ -18,10 +26,11 @@ export default class AccountPagePom {
    */
   constructor(page) {
     this.#page = page;
+    this.root = page.locator('account-page');
 
-    this.logoutButton = page.getByRole('button', { name: 'Log Out' });
-    this.favoritesButton = page.getByRole('button', { name: 'Your Favorites' });
-    this.watchlistButton = page.getByRole('button', { name: 'Your Watchlist' });
+    this.logoutButton = this.root.getByRole('button', { name: 'Log Out' });
+    this.favoritesButton = this.root.getByRole('button', { name: 'Your Favorites' });
+    this.watchlistButton = this.root.getByRole('button', { name: 'Your Watchlist' });
   }
 
   /**

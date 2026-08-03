@@ -1,17 +1,25 @@
 import { ROUTES } from '../../constants.js';
 
 /**
+ * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
  * Page object model for the /account/favorites screen.
  */
 export default class FavoritesPagePom {
-  /** @type {import('@playwright/test').Page} */
+  /** @type {Page} */
   #page;
+  /** @type {Locator} */
+  root;
 
   /**
    * @param {import('@playwright/test').Page} page
    */
   constructor(page) {
     this.#page = page;
+    this.root = page.locator('favorites-page');
   }
 
   /**
