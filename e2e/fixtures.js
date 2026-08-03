@@ -4,6 +4,7 @@ import FavoritesPagePom from './poms/account/favorites-page.pom.js';
 import LoginPagePom from './poms/account/login-page.pom.js';
 import RegisterPagePom from './poms/account/register-page.pom.js';
 import WatchlistPagePom from './poms/account/watchlist-page.pom.js';
+import ErrorModalPom from './poms/error-modal.pom.js';
 import HomePagePom from './poms/home-page.pom.js';
 import MoviesPagePom from './poms/movies-page.pom.js';
 import MovieDetailsPagePom from './poms/movie-details-page.pom.js';
@@ -24,6 +25,7 @@ import MovieDetailsPagePom from './poms/movie-details-page.pom.js';
  *     loginPage: LoginPagePom,
  *     registerPage: RegisterPagePom,
  *     watchlistPage: WatchlistPagePom,
+ *     errorModal: ErrorModalPom,
  *   },
  *   {},
  *   import('@playwright/test').PlaywrightTestArgs,
@@ -55,6 +57,10 @@ const fixtures = {
   },
   watchlistPage: async ({ page }, use) => {
     await use(new WatchlistPagePom(page));
+  },
+  // utility components
+  errorModal: async ({ page }, use) => {
+    await use(new ErrorModalPom(page));
   },
 };
 

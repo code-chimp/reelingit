@@ -22,7 +22,7 @@ export default class AccountPagePom {
   watchlistButton;
 
   /**
-   * @param {import('@playwright/test').Page} page
+   * @param {Page} page
    */
   constructor(page) {
     this.#page = page;

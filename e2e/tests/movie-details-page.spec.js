@@ -1,5 +1,7 @@
 import { expect, test } from '../fixtures.js';
 
+const EXPECTED_CAST_SIZE = 80;
+
 test.describe('MovieDetailsPage', () => {
   test.describe('base / guest behavior', () => {
     test.beforeEach(async ({ movieDetailsPage }) => {
@@ -13,7 +15,35 @@ test.describe('MovieDetailsPage', () => {
       await expect(movieDetailsPage.overview).toHaveText(
         'Light years from Earth, 26 years after being abducted, Peter Quill finds himself the prime target of a manhunt after discovering an orb wanted by Ronan the Accuser.',
       );
-      // happy path test of controls and display elements
+
+      await expect(movieDetailsPage.poster).toHaveAttribute(
+        'src',
+        'https://image.tmdb.org/t/p/w500/jPrJPZKJVhvyJ4DmUTrDgmFN0yG.jpg',
+      );
+      await expect(movieDetailsPage.youtubeEmbed).toHaveAttribute(
+        'data-url',
+        'https://www.youtube.com/watch?v=3CqymRQ1uUU',
+      );
+
+      await expect(movieDetailsPage.genres.locator('li')).toHaveText([
+        'Adventure',
+        'Action',
+        'Science Fiction',
+      ]);
+
+      await expect(movieDetailsPage.metadata.locator('dt')).toHaveText([
+        'Release Year',
+        'Score',
+        'Popularity',
+      ]);
+      await expect(movieDetailsPage.metadata.locator('dd')).toHaveText([
+        '2014',
+        '7.9 / 10',
+        '481.09863',
+      ]);
+
+      await expect(movieDetailsPage.cast.locator('li')).toHaveCount(EXPECTED_CAST_SIZE);
+      await expect(movieDetailsPage.cast.locator('li').first()).toContainText('Zoe Saldana');
     });
 
     test('cannot favorite the current movie', async ({ loginPage, movieDetailsPage }) => {
@@ -64,12 +94,14 @@ test.describe('MovieDetailsPage', () => {
     const INVALID_MOVIE_ID = 99999;
 
     test('navigating with an invalid movie id results in the home page with an error modal', async ({
+      errorModal,
       homePage,
       movieDetailsPage,
     }) => {
       await movieDetailsPage.goto(INVALID_MOVIE_ID);
       await expect(homePage.root).toBeVisible();
-      // need to verify error modal
+      await expect(errorModal.root).toBeVisible();
+      await expect(errorModal.message).toHaveText('Movie not found');
     });
   });
 });
